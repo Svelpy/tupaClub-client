@@ -1,0 +1,9 @@
+export { default as CategoriaActions } from './categoriaActions.svelte';
+export { default as CategoriaCard } from './categoriaCard.svelte';
+export { default as CategoriaDeleteModal } from './categoriaDeleteModal.svelte';
+export { default as CategoriaFormModal } from './categoriaFormModal.svelte';
+export { default as CategoriaIcon } from './categoriaIcon.svelte';
+export { default as CategoriaIconPicker } from './categoriaIconPicker.svelte';
+export { default as CategoriaList } from './categoriaList.svelte';
+export { default as CategoriaRow } from './categoriaRow.svelte';
+export { default as CategoriaTable } from './categoriaTable.svelte';

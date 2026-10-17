@@ -1,0 +1,77 @@
+[
+    {
+        "icon_number": 1,
+        "name": "Salud y bienestar",
+        "icon": "🩺"
+    },
+    {
+        "icon_number": 2,
+        "name": "Supermercado y compras",
+        "icon": "🛍️"
+    },
+    {
+        "icon_number": 3,
+        "name": "Hogar",
+        "icon": "🏠"
+    },
+    {
+        "icon_number": 4,
+        "name": "Comida y restaurantes",
+        "icon": "🍽️"
+    },
+    {
+        "icon_number": 5,
+        "name": "Delivery",
+        "icon": "🚚"
+    },
+    {
+        "icon_number": 6,
+        "name": "Belleza y estética",
+        "icon": "💄"
+    },
+    {
+        "icon_number": 7,
+        "name": "Entretenimiento",
+        "icon": "🍿"
+    },
+    {
+        "icon_number": 8,
+        "name": "Moda y accesorios",
+        "icon": "🧥"
+    },
+    {
+        "icon_number": 9,
+        "name": "Deporte y ejercicio",
+        "icon": "🏅"
+    },
+    {
+        "icon_number": 10,
+        "name": "Viajes y turismo",
+        "icon": "✈️"
+    },
+    {
+        "icon_number": 11,
+        "name": "Transporte y combustible",
+        "icon": "🚗"
+    },
+    {
+        "icon_number": 12,
+        "name": "Tecnología y electrónica",
+        "icon": "🖱️"
+    },
+    {
+        "icon_number": 13,
+        "name": "Mascotas",
+        "icon": "🐾"
+    },
+    {
+        "icon_number": 14,
+        "name": "Regalos y ocasiones especiales",
+        "icon": "🎁"
+    },
+    {
+        "icon_number": 15,
+        "name": "Servicios y otros",
+        "icon": "📦"
+    }
+]
