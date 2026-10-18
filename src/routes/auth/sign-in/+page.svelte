@@ -80,11 +80,11 @@
 	title="Iniciar sesión"
 	class="container mx-auto flex min-h-dvh items-center justify-center bg-light-one dark:bg-dark-one"
 >
-	<section class="flex justify-center px-4">
+	<section class="flex w-full justify-center px-4">
 		<form
 			onsubmit={handleSubmit}
 			novalidate
-			class="relative w-full max-w-md min-w-md self-start rounded-3xl bg-light-one p-6 md:self-auto md:p-8 md:shadow-2xl md:ring-1 md:ring-light-four dark:bg-dark-one md:dark:ring-dark-four"
+			class="relative w-full max-w-md self-start rounded-3xl bg-light-one p-6 md:self-auto md:p-8 md:shadow-2xl md:ring-1 md:ring-light-four dark:bg-dark-one md:dark:ring-dark-four"
 		>
 			<img
 				src={asset('images/logo_app.webp')}
@@ -99,7 +99,7 @@
 			{#if formError}
 				<div
 					role="alert"
-					class="mt-6 flex items-start gap-2.5 rounded-xl border border-light-error bg-light-error/10 p-3 text-sm text-light-error dark:border-dark-error dark:bg-dark-error/500"
+					class="mt-6 flex items-start gap-2.5 rounded-xl border border-light-error bg-light-error/10 p-3 text-sm text-light-error dark:border-dark-error dark:bg-dark-error/10 dark:text-dark-error"
 				>
 					<AlertTriangleIcon class="mt-0.5 size-5 shrink-0" />
 					<span>{formError}</span>
