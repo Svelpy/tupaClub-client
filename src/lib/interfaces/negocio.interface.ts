@@ -21,6 +21,12 @@ export interface NegocioListItem {
 	sucursales: Sucursal[];
 }
 
+/** Sucursal junto a su negocio, para mostrar "Sucursal · Negocio" a partir de un sucursal_id */
+export interface SucursalConNegocio {
+	sucursal: Sucursal;
+	negocio: Negocio;
+}
+
 export interface NegocioListParams extends PaginationParams {
 	/** Sin valor = todos los tipos */
 	tipo?: NegocioTipo | null;

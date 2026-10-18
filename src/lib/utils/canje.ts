@@ -16,3 +16,8 @@ export function getCanjeStatus(canje: CanjeVigencia, now = Date.now()): CanjeSta
 export function maskCodigoCanje(codigo: string, visible = 2): string {
 	return '•'.repeat(Math.max(0, codigo.length - visible)) + codigo.slice(-visible);
 }
+
+/** Código en grupos de 4 para leerlo o dictarlo más fácil (p. ej. "00123456" → "0012 3456") */
+export function formatCodigoCanje(codigo: string): string {
+	return codigo.replace(/(.{4})(?=.)/g, '$1 ');
+}

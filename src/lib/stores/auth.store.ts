@@ -93,6 +93,13 @@ export const authStore = {
 		authService.setCurrentUser(userData);
 	},
 
+	/** Actualiza el saldo de puntos de la sesión (p. ej. tras un canje o al cargar el resumen) */
+	setPuntos: (puntos: number) => {
+		const current = get(currentUserStore);
+		if (!current || current.user.puntos === puntos) return;
+		authStore.setUser({ ...current, user: { ...current.user, puntos } });
+	},
+
 	/**
 	 * Clears auth data and redirects to login
 	 */

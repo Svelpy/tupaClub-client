@@ -7,9 +7,9 @@
 		CanjeList,
 		CanjeRedeemModal,
 		CanjeStatusTabs,
-		CanjeSucursalFilter,
 		CanjeVencidosBanner
 	} from '#lib/components/features/panel/canjes/index.ts';
+	import { SucursalFilter } from '#lib/components/features/panel/sucursales/index.ts';
 	import { Action, Module } from '#lib/config/index.ts';
 	import { PAGINATION } from '#lib/constants/index.ts';
 	import { StopwatchIcon, TicketIcon } from '#lib/icons/outline/index.ts';
@@ -203,11 +203,7 @@
 {/snippet}
 
 <MainLayout title="Canjes" noIndex class="container mx-auto">
-	<PageHeader
-		title="Canjes"
-		description="Confirma los canjes con el código del cliente y revisa su historial."
-		actions={canUpdate ? headerActions : undefined}
-	/>
+	<PageHeader title="Canjes" actions={canUpdate ? headerActions : undefined} />
 
 	<CanjeStatusTabs
 		{status}
@@ -215,7 +211,8 @@
 		onChange={(value) => applyFilters({ status: value })}
 	>
 		{#snippet toolbar()}
-			<CanjeSucursalFilter
+			<SucursalFilter
+				id="canjes-sucursal"
 				{negocios}
 				{sucursalId}
 				{isLoadingOptions}

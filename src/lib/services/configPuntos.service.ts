@@ -16,6 +16,13 @@ class ConfigPuntosService {
 		});
 	}
 
+	/** Configuración vigente (status ACTIVE). Responde 404 si no hay ninguna */
+	async getActive(): Promise<ConfigPuntosDetail> {
+		return apiFidelityTupa.get<ConfigPuntosDetail>('/config-puntos/active', {
+			requireAuth: true
+		});
+	}
+
 	/** Sustituye la configuración activa: la anterior queda INACTIVE */
 	async create(data: CreateConfigPuntosRequest): Promise<ConfigPuntosDetail> {
 		return apiFidelityTupa.post<ConfigPuntosDetail>('/config-puntos/', data, {

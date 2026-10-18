@@ -88,3 +88,11 @@ body {
 	-ms-overflow-style: none;
 	scrollbar-width: none;
 }
+
+/* Transición entre páginas del área de clientes (onNavigate en /app): fundido corto, estilo nativo.
+   La barra superior y las pestañas tienen su propio view-transition-name y no se animan. */
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation-duration: 180ms;
+	animation-timing-function: ease-out;
+}

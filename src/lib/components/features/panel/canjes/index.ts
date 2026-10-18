@@ -8,6 +8,5 @@ export { default as CanjeRedeemModal } from './canjeRedeemModal.svelte';
 export { default as CanjeRow } from './canjeRow.svelte';
 export { default as CanjeStatusBadge } from './canjeStatusBadge.svelte';
 export { default as CanjeStatusTabs } from './canjeStatusTabs.svelte';
-export { default as CanjeSucursalFilter } from './canjeSucursalFilter.svelte';
 export { default as CanjeTable } from './canjeTable.svelte';
 export { default as CanjeVencidosBanner } from './canjeVencidosBanner.svelte';

@@ -15,6 +15,11 @@ export interface RoleAccess {
 	home: StaticRouteId;
 	/** Cada ruta habilita también todas sus subrutas ('/app' cubre '/app/vales/[id]') */
 	routes: readonly RouteId[];
+	/**
+	 * Solo esa página, sin sus subrutas. Para abrir una página raíz (p. ej. el inicio '/panel')
+	 * sin habilitar todo lo que cuelga de ella.
+	 */
+	exactRoutes?: readonly RouteId[];
 }
 
 const PANEL_ADMIN: RoleAccess = { home: '/panel', routes: ['/panel'] };
@@ -25,14 +30,15 @@ export const ROLE_ACCESS: Record<Role, RoleAccess> = {
 	[Role.OWNER]: PANEL_ADMIN,
 	[Role.ADMIN]: PANEL_ADMIN,
 	[Role.CAJERO]: {
-		home: '/panel/registrar-compra',
+		// Su inicio muestra el resumen de sus compras de hoy (/resumen/cajero)
+		home: '/panel',
+		exactRoutes: ['/panel'],
 		routes: [
 			'/panel/registrar-compra',
 			'/panel/categorias',
 			'/panel/vales',
 			'/panel/operaciones',
 			'/panel/canjes',
-			'/panel/clientes',
 			'/panel/configuracion-puntos'
 		]
 	},

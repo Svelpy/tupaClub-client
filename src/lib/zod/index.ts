@@ -5,3 +5,6 @@ export * from './sucursal.schema';
 export * from './configPuntos.schema';
 export * from './cliente.schema';
 export * from './canje.schema';
+export * from './administrador.schema';
+export * from './operacion.schema';
+export * from './vale.schema';

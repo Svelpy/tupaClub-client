@@ -16,6 +16,12 @@ class CategoriaService {
 		});
 	}
 
+	async get(id: string): Promise<CategoriaDetail> {
+		return apiFidelityTupa.get<CategoriaDetail>(`/categorias/${encodeURIComponent(id)}`, {
+			requireAuth: true
+		});
+	}
+
 	async create(data: CreateCategoriaRequest): Promise<CategoriaDetail> {
 		return apiFidelityTupa.post<CategoriaDetail>('/categorias/', data, { requireAuth: true });
 	}

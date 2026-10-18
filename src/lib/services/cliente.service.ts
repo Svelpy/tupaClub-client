@@ -1,5 +1,6 @@
 import { apiFidelityTupa } from '#lib/config/index.ts';
 import type {
+	Cliente,
 	ClienteDetail,
 	ClienteListParams,
 	ClienteListResponse,
@@ -18,6 +19,16 @@ class ClienteService {
 		const query = buildPaginationQuery(params);
 		query.set('role', CLIENTE_ROLE);
 		return apiFidelityTupa.get<ClienteListResponse>(`/users/?${query}`, {
+			requireAuth: true
+		});
+	}
+
+	/**
+	 * Usuario con esa cédula (solo dígitos, 6 a 20). Puede tener cualquier rol: validar que sea CLIENTE.
+	 * Responde 404 si no existe.
+	 */
+	async getByCi(ci: string): Promise<Cliente> {
+		return apiFidelityTupa.get<Cliente>(`/users/ci/${encodeURIComponent(ci)}`, {
 			requireAuth: true
 		});
 	}

@@ -1,4 +1,5 @@
-import { NO_DATA_LABEL } from '#lib/constants/index.ts';
+import { NO_DATA_LABEL, ROLE_LABEL } from '#lib/constants/index.ts';
+import { isRole } from './rbac.utils';
 
 type BaseOptions = {
 	fallback?: string;
@@ -71,7 +72,8 @@ export function formatCurrency(
 
 	if (isNullish(value)) return fallback;
 
-	return new Intl.NumberFormat(undefined, {
+	// es-BO para mostrar "Bs 150,00" en vez de "BOB 150.00" según el idioma del navegador
+	return new Intl.NumberFormat('es-BO', {
 		style: 'currency',
 		currency
 	}).format(Number(value));
@@ -106,6 +108,24 @@ export function formatDate(dateString?: string): string {
 	});
 }
 
+/** Fecha completa con el día de la semana (p. ej. "viernes, 17 de octubre de 2026") */
+export function formatDateLong(dateString?: string | null, options?: BaseOptions): string {
+	const fallback = options?.fallback ?? NO_DATA_LABEL;
+	if (isNullish(dateString)) return fallback;
+
+	// Solo la parte de la fecha, en hora local: "2026-10-17" no debe correrse al día anterior
+	const [year, month, day] = dateString.split('T')[0].split('-').map(Number);
+	const date = new Date(year, month - 1, day);
+	if (isNaN(date.getTime())) return fallback;
+
+	return date.toLocaleDateString('es-ES', {
+		weekday: 'long',
+		day: 'numeric',
+		month: 'long',
+		year: 'numeric'
+	});
+}
+
 export function formatDateTime(dateString?: string): string {
 	if (isNullish(dateString)) return NO_DATA_LABEL;
 
@@ -121,6 +141,30 @@ export function formatDateTime(dateString?: string): string {
 		hour12: true
 	});
 }
+/**
+ * Nombre completo de un usuario (p. ej. "Carlos Pérez López"); sin apellidos, solo el nombre
+ */
+export function formatFullName(
+	user: { nombre: string; apellidos?: string | null } | null | undefined,
+	options?: BaseOptions
+): string {
+	const fallback = options?.fallback ?? NO_DATA_LABEL;
+	if (isNullish(user)) return fallback;
+
+	return `${user.nombre} ${user.apellidos ?? ''}`.trim() || fallback;
+}
+
+/**
+ * Rol de usuario legible (p. ej. "OWNER" → "Propietario"); un rol desconocido se muestra tal cual
+ */
+export function formatRole(value: string | null | undefined, options?: BaseOptions): string {
+	const fallback = options?.fallback ?? NO_DATA_LABEL;
+
+	if (isNullish(value) || isEmptyString(value)) return fallback;
+
+	return isRole(value) ? ROLE_LABEL[value] : value;
+}
+
 const RELATIVE_UNITS: [Intl.RelativeTimeFormatUnit, number][] = [
 	['year', 365 * 24 * 60 * 60 * 1000],
 	['month', 30 * 24 * 60 * 60 * 1000],

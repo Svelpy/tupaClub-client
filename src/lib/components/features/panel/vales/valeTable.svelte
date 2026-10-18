@@ -1,17 +1,18 @@
 <script lang="ts">
 	import { Table, TableBody, TableHead, TableHeader, TableRow } from '#lib/components/ui/index.ts';
-	import type { Categoria, Negocio, Vale } from '#lib/interfaces/index.ts';
+	import type { ValeListItem } from '#lib/interfaces/index.ts';
 	import ValeRow from './valeRow.svelte';
 
 	interface Props {
-		vales: Vale[];
-		categoriasById: Map<string, Categoria>;
-		negociosById: Map<string, Negocio>;
+		vales: ValeListItem[];
+		onView: (item: ValeListItem) => void;
+		onEdit?: (item: ValeListItem) => void;
+		onDelete?: (item: ValeListItem) => void;
 	}
 
-	let { vales, categoriasById, negociosById }: Props = $props();
+	let { vales, onView, onEdit, onDelete }: Props = $props();
 
-	const headClass = 'h-11 text-xs tracking-wide text-light-two_d uppercase dark:text-dark-four_d';
+	const headClass = 'h-11 text-xs tracking-wide text-light-two_d uppercase dark:text-dark-two_d';
 </script>
 
 <div class="overflow-x-auto">
@@ -23,15 +24,14 @@
 				<TableHead class="{headClass} hidden lg:table-cell">Categoría</TableHead>
 				<TableHead class="{headClass} w-28 text-right">Valor</TableHead>
 				<TableHead class="{headClass} w-28 text-right">Puntos</TableHead>
+				<TableHead class="h-11 w-14 px-2">
+					<span class="sr-only">Acciones</span>
+				</TableHead>
 			</TableRow>
 		</TableHeader>
 		<TableBody>
-			{#each vales as vale (vale.id)}
-				<ValeRow
-					{vale}
-					categoria={categoriasById.get(vale.categoria_id)}
-					negocio={negociosById.get(vale.negocio_id)}
-				/>
+			{#each vales as item (item.vale.id)}
+				<ValeRow {item} {onView} {onEdit} {onDelete} />
 			{/each}
 		</TableBody>
 	</Table>

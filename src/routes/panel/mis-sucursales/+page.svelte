@@ -4,7 +4,7 @@
 </script>
 
 <MainLayout title="Mis sucursales" noIndex>
-	<PageHeader title="Mis sucursales" description="Administra las sucursales de tu negocio." />
+	<PageHeader title="Mis sucursales" />
 
 	<section
 		class="mt-6 rounded-2xl border border-dashed border-light-four p-10 text-center text-sm text-light-two_d dark:border-dark-four dark:text-dark-four"

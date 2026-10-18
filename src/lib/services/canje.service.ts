@@ -3,7 +3,10 @@ import type {
 	CanjeDetail,
 	CanjeListParams,
 	CanjeListResponse,
+	CreateCanjeRequest,
 	ExpireCanjesResponse,
+	MiCanjeListParams,
+	MiCanjeListResponse,
 	RedeemCanjeRequest
 } from '#lib/interfaces/index.ts';
 import { buildPaginationQuery } from '#lib/utils/pagination.ts';
@@ -20,6 +23,22 @@ class CanjeService {
 		if (sucursal_id) query.set('sucursal_id', sucursal_id);
 
 		return apiFidelityTupa.get<CanjeListResponse>(`/canjes/?${query}`, { requireAuth: true });
+	}
+
+	/** Solo para el rol CLIENTE: canjes del usuario en sesión, cada uno con su vale y su negocio */
+	async listMine({ status, ...pagination }: MiCanjeListParams = {}): Promise<MiCanjeListResponse> {
+		const query = buildPaginationQuery(pagination);
+		if (status) query.set('status', status);
+
+		return apiFidelityTupa.get<MiCanjeListResponse>(`/canjes/me?${query}`, { requireAuth: true });
+	}
+
+	/**
+	 * Solo para el rol CLIENTE: canjea el vale con sus puntos. El canje queda PENDIENTE con su
+	 * código hasta que lo presenta en una sucursal. Responde 409 si no le alcanzan los puntos.
+	 */
+	async create(data: CreateCanjeRequest): Promise<CanjeDetail> {
+		return apiFidelityTupa.post<CanjeDetail>('/canjes/', data, { requireAuth: true });
 	}
 
 	/** Confirma el canje pendiente que corresponde al código que presenta el cliente */

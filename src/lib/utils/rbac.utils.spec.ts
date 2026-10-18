@@ -2,7 +2,18 @@ import { describe, it, expect } from 'vitest';
 import { Action, Module, Role } from '#lib/config/permissions.config.ts';
 import type { NavSection } from '#lib/interfaces/index.ts';
 import { filterNavigation } from './navigation';
-import { can, canAccessRoute, getHomeRoute, isRole, isSafeRedirect } from './rbac.utils';
+import {
+	can,
+	canAccessRoute,
+	canManageUserRole,
+	canViewResumenAdmin,
+	canViewResumenCajero,
+	getAssignableUserRoles,
+	getHomeRoute,
+	getListableUserRoles,
+	isRole,
+	isSafeRedirect
+} from './rbac.utils';
 
 const ADMINS = [Role.SUPERADMIN, Role.OWNER, Role.ADMIN];
 
@@ -21,12 +32,12 @@ const PANEL_ROUTES = [
 ];
 
 const CAJERO_ROUTES = [
+	'/panel',
 	'/panel/registrar-compra',
 	'/panel/categorias',
 	'/panel/vales',
 	'/panel/operaciones',
 	'/panel/canjes',
-	'/panel/clientes',
 	'/panel/configuracion-puntos'
 ];
 
@@ -53,6 +64,13 @@ describe('canAccessRoute', () => {
 			expect(canAccessRoute(Role.CAJERO, route)).toBe(CAJERO_ROUTES.includes(route));
 		}
 		expect(canAccessRoute(Role.CAJERO, '/app')).toBe(false);
+	});
+
+	it('una ruta exacta no habilita sus subrutas', () => {
+		// CAJERO abre el inicio '/panel' pero no por eso todo el panel
+		expect(canAccessRoute(Role.CAJERO, '/panel')).toBe(true);
+		expect(canAccessRoute(Role.CAJERO, '/panel/administradores')).toBe(false);
+		expect(canAccessRoute(Role.CAJERO, '/panel/clientes')).toBe(false);
 	});
 
 	it('SOCIO accede solo a /panel/canjes', () => {
@@ -162,5 +180,88 @@ describe('filterNavigation', () => {
 
 	it('sin rol no muestra nada', () => {
 		expect(filterNavigation(sections, null)).toEqual([]);
+	});
+});
+
+describe('getListableUserRoles', () => {
+	it('nunca incluye CLIENTE', () => {
+		for (const role of Object.values(Role)) {
+			expect(getListableUserRoles(role)).not.toContain(Role.CLIENTE);
+		}
+	});
+
+	it('cada rol del panel ve su mismo nivel y los inferiores', () => {
+		expect(getListableUserRoles(Role.SUPERADMIN)).toEqual([
+			Role.SUPERADMIN,
+			Role.OWNER,
+			Role.ADMIN,
+			Role.CAJERO,
+			Role.SOCIO
+		]);
+		expect(getListableUserRoles(Role.OWNER)).toEqual([
+			Role.OWNER,
+			Role.ADMIN,
+			Role.CAJERO,
+			Role.SOCIO
+		]);
+		expect(getListableUserRoles(Role.ADMIN)).toEqual([Role.ADMIN, Role.CAJERO, Role.SOCIO]);
+		expect(getListableUserRoles(Role.CAJERO)).toEqual([]);
+		expect(getListableUserRoles(null)).toEqual([]);
+	});
+});
+
+describe('canManageUserRole', () => {
+	it('solo gestiona roles inferiores, nunca el mismo', () => {
+		expect(canManageUserRole(Role.SUPERADMIN, Role.OWNER)).toBe(true);
+		expect(canManageUserRole(Role.SUPERADMIN, Role.SUPERADMIN)).toBe(false);
+		expect(canManageUserRole(Role.OWNER, Role.ADMIN)).toBe(true);
+		expect(canManageUserRole(Role.OWNER, Role.OWNER)).toBe(false);
+		expect(canManageUserRole(Role.OWNER, Role.SUPERADMIN)).toBe(false);
+		expect(canManageUserRole(Role.ADMIN, Role.CAJERO)).toBe(true);
+		expect(canManageUserRole(Role.ADMIN, Role.SOCIO)).toBe(true);
+		expect(canManageUserRole(Role.ADMIN, Role.ADMIN)).toBe(false);
+	});
+
+	it('deniega sin rol o con un rol desconocido', () => {
+		expect(canManageUserRole(null, Role.SOCIO)).toBe(false);
+		expect(canManageUserRole(Role.SUPERADMIN, 'ROOT')).toBe(false);
+	});
+});
+
+describe('getAssignableUserRoles', () => {
+	it('solo asigna roles inferiores que la API acepta', () => {
+		expect(getAssignableUserRoles(Role.SUPERADMIN)).toEqual([
+			Role.OWNER,
+			Role.ADMIN,
+			Role.CAJERO,
+			Role.SOCIO
+		]);
+		expect(getAssignableUserRoles(Role.OWNER)).toEqual([Role.ADMIN, Role.CAJERO, Role.SOCIO]);
+		expect(getAssignableUserRoles(Role.ADMIN)).toEqual([Role.CAJERO, Role.SOCIO]);
+		expect(getAssignableUserRoles(Role.CAJERO)).toEqual([]);
+	});
+});
+
+describe('canViewResumenAdmin', () => {
+	it('solo OWNER y ADMIN, igual que require_role del backend', () => {
+		expect(canViewResumenAdmin(Role.OWNER)).toBe(true);
+		expect(canViewResumenAdmin(Role.ADMIN)).toBe(true);
+	});
+
+	it('SUPERADMIN y los demás roles no lo ven', () => {
+		for (const role of [Role.SUPERADMIN, Role.CAJERO, Role.SOCIO, Role.CLIENTE]) {
+			expect(canViewResumenAdmin(role)).toBe(false);
+		}
+		expect(canViewResumenAdmin(null)).toBe(false);
+	});
+});
+
+describe('canViewResumenCajero', () => {
+	it('solo CAJERO, igual que require_role del backend', () => {
+		expect(canViewResumenCajero(Role.CAJERO)).toBe(true);
+		for (const role of [Role.SUPERADMIN, Role.OWNER, Role.ADMIN, Role.SOCIO, Role.CLIENTE]) {
+			expect(canViewResumenCajero(role)).toBe(false);
+		}
+		expect(canViewResumenCajero(null)).toBe(false);
 	});
 });

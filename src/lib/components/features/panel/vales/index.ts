@@ -1,5 +1,9 @@
+export { default as ValeActions } from './valeActions.svelte';
 export { default as ValeCard } from './valeCard.svelte';
+export { default as ValeDeleteModal } from './valeDeleteModal.svelte';
+export { default as ValeDetailModal } from './valeDetailModal.svelte';
 export { default as ValeFilters } from './valeFilters.svelte';
+export { default as ValeFormModal } from './valeFormModal.svelte';
 export { default as ValeImage } from './valeImage.svelte';
 export { default as ValeList } from './valeList.svelte';
 export { default as ValeRow } from './valeRow.svelte';

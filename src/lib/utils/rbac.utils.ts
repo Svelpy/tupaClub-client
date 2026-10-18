@@ -1,9 +1,17 @@
 import {
+	ASSIGNABLE_USER_ROLES,
+	LISTABLE_USER_ROLES,
+	ROLE_LEVEL,
+	RESUMEN_ADMIN_ROLES,
+	RESUMEN_CAJERO_ROLES,
 	ROLE_PERMISSIONS,
 	Role,
 	type Action,
-	type Module
+	type AssignableUserRole,
+	type Module,
+	type PanelUserRole
 } from '#lib/config/permissions.config.ts';
+import type { RouteId } from '$app/types';
 import { ROLE_ACCESS, type StaticRouteId } from '#lib/config/routeAccess.config.ts';
 
 const ROLES = new Set<string>(Object.values(Role));
@@ -19,6 +27,35 @@ export function can(role: Role | null, module: Module, action: Action): boolean 
 	return ROLE_PERMISSIONS[role]?.[module]?.includes(action) ?? false;
 }
 
+/** true si el rol puede consultar el resumen de inicio del panel */
+export function canViewResumenAdmin(role: Role | null): boolean {
+	return !!role && RESUMEN_ADMIN_ROLES.includes(role);
+}
+
+/** true si el rol puede consultar el resumen de sus compras del día */
+export function canViewResumenCajero(role: Role | null): boolean {
+	return !!role && RESUMEN_CAJERO_ROLES.includes(role);
+}
+
+/** Roles de usuarios del panel que el rol puede ver en Administradores */
+export function getListableUserRoles(role: Role | null): readonly PanelUserRole[] {
+	return role ? LISTABLE_USER_ROLES[role] : [];
+}
+
+/**
+ * true si el rol puede editar, restablecer la contraseña o eliminar a un usuario con `targetRole`:
+ * solo a niveles inferiores al suyo. Un rol desconocido se deniega.
+ */
+export function canManageUserRole(role: Role | null, targetRole: unknown): boolean {
+	if (!role || !isRole(targetRole)) return false;
+	return ROLE_LEVEL[targetRole] < ROLE_LEVEL[role];
+}
+
+/** Roles que el rol puede asignar al crear o editar un usuario del panel */
+export function getAssignableUserRoles(role: Role | null): AssignableUserRole[] {
+	return ASSIGNABLE_USER_ROLES.filter((target) => canManageUserRole(role, target));
+}
+
 // Los grupos de rutas `(grupo)` no forman parte de la URL: '/(admin)/panel' equivale a '/panel'
 function stripRouteGroups(routeId: string): string {
 	return routeId.replace(/\/\([^)]+\)/g, '') || '/';
@@ -31,6 +68,7 @@ export function canAccessRoute(role: Role | null, routeId: string | null): boole
 	if (!access) return false;
 
 	const id = stripRouteGroups(routeId);
+	if (access.exactRoutes?.includes(id as RouteId)) return true;
 	// Por segmentos: '/panel/canjes' habilita '/panel/canjes/[id]' pero no '/panel/canjes-x'
 	return access.routes.some((route) => id === route || id.startsWith(`${route}/`));
 }

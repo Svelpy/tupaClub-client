@@ -192,7 +192,7 @@
 				</div>
 			</div>
 
-			<Button type="submit" variant="primary" size="lg" fullWidth {isLoading} class="mt-8">
+			<Button type="submit" variant="primary" size="lg" fullWidth loading={isLoading} class="mt-8">
 				Ingresar
 			</Button>
 

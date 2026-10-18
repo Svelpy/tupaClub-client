@@ -170,6 +170,22 @@ class ErrorService {
 		return appError.message || fallback;
 	}
 
+	/**
+	 * Errores por campo que la API envía en `details` (p. ej. `{ total_compra: "..." }`), para
+	 * mostrarlos debajo de cada input. Los objetos anidados se aplanan (`receptor_data.nombre` → `nombre`).
+	 */
+	getFieldErrors(error: unknown): Record<string, string> {
+		const errors: Record<string, string> = {};
+		const collect = (source: Record<string, unknown>) => {
+			for (const [field, value] of Object.entries(source)) {
+				if (typeof value === 'string') errors[field] ??= value;
+				else if (isRecord(value)) collect(value);
+			}
+		};
+		collect(this.fromUnknown(error).details);
+		return errors;
+	}
+
 	/** Registra el error. Los errores esperados (4xx) solo se registran en desarrollo. */
 	log(error: unknown): void {
 		const appError = this.fromUnknown(error);

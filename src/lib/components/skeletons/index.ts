@@ -1,4 +1,16 @@
+export { default as AdministradorListSkeleton } from './administradorListSkeleton.svelte';
 export { default as CanjeListSkeleton } from './canjeListSkeleton.svelte';
+export { default as CategoriaGridSkeleton } from './categoriaGridSkeleton.svelte';
 export { default as CategoriaListSkeleton } from './categoriaListSkeleton.svelte';
 export { default as ClienteListSkeleton } from './clienteListSkeleton.svelte';
+export { default as MiCanjeListSkeleton } from './miCanjeListSkeleton.svelte';
 export { default as NegocioListSkeleton } from './negocioListSkeleton.svelte';
+export { default as OperacionListSkeleton } from './operacionListSkeleton.svelte';
+export { default as RegistrarCompraResumenSkeleton } from './registrarCompraResumenSkeleton.svelte';
+export { default as ResumenAdminSkeleton } from './resumenAdminSkeleton.svelte';
+export { default as ResumenCajeroSkeleton } from './resumenCajeroSkeleton.svelte';
+export { default as ResumenClienteSkeleton } from './resumenClienteSkeleton.svelte';
+export { default as ValeDetailPageSkeleton } from './valeDetailPageSkeleton.svelte';
+export { default as ValeDetailSkeleton } from './valeDetailSkeleton.svelte';
+export { default as ValeGridSkeleton } from './valeGridSkeleton.svelte';
+export { default as ValeListSkeleton } from './valeListSkeleton.svelte';

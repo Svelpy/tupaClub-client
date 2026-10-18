@@ -1,3 +1,4 @@
+import type { Negocio } from './negocio.interface';
 import type { PaginatedResponse, PaginationParams } from './pagination.interface';
 import type { Vale } from './vale.interface';
 
@@ -41,11 +42,29 @@ export interface CanjeListParams extends PaginationParams {
 
 export type CanjeListResponse = PaginatedResponse<CanjeListItem>;
 
+/** Item de "Mis canjes" (rol CLIENTE): el canje con su vale y el negocio donde se usa */
+export interface MiCanjeListItem extends CanjeListItem {
+	negocio: Negocio;
+}
+
+export interface MiCanjeListParams extends PaginationParams {
+	/** Sin valor = todos los estados */
+	status?: CanjeStatus | null;
+}
+
+export type MiCanjeListResponse = PaginatedResponse<MiCanjeListItem>;
+
 /** Canje completo con datos de auditoría (respuesta de confirmar y cancelar) */
 export interface CanjeDetail extends Canje {
 	is_deleted: boolean;
 	created_by: string | null;
 	updated_by: string | null;
+}
+
+/** Lo solicita el cliente: descuenta los puntos del vale y genera el código de canje */
+export interface CreateCanjeRequest {
+	vale_id: string;
+	referencia: string | null;
 }
 
 export interface RedeemCanjeRequest {

@@ -14,6 +14,12 @@ export interface NavItem {
 	exact?: boolean;
 }
 
+/** Item de la navegación del cliente: pestaña inferior en móvil y link de la barra superior en escritorio */
+export interface ClientNavItem extends NavItem {
+	/** Texto de la pestaña inferior: corto para que entren todas en pantallas angostas */
+	shortLabel: string;
+}
+
 export interface NavSection {
 	id: string;
 	label: string;

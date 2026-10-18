@@ -5,19 +5,62 @@ import {
 	BuildindStoreIcon,
 	GiftIcon,
 	HomeDotIcon,
+	SearchIcon,
 	SettingsIcon,
 	ShieldIcon,
 	ShoppingCartIcon,
+	SparklesIcon,
 	TagIcon,
 	TicketIcon,
 	UsersIcon
 } from '#lib/icons/outline/index.ts';
-import type { NavItem, NavSection } from '#lib/interfaces/index.ts';
+import type { ClientNavItem, NavItem, NavSection } from '#lib/interfaces/index.ts';
 
 /** El href se resuelve desde la ruta: una sola fuente para el link y para el control de acceso */
 function navItem(item: Omit<NavItem, 'href'>): NavItem {
 	return { ...item, href: resolve(item.route) };
 }
+
+function clientNavItem(item: Omit<ClientNavItem, 'href'>): ClientNavItem {
+	return { ...item, href: resolve(item.route) };
+}
+
+/**
+ * Navegación del área de clientes (/app): pestañas inferiores en móvil y barra superior en escritorio.
+ * Las pestañas solo se muestran en estas páginas raíz; en las de detalle se ocultan (patrón de pila nativo).
+ * El perfil no es pestaña: se abre desde el menú del avatar en la cabecera.
+ */
+export const CLIENT_NAVIGATION: ClientNavItem[] = [
+	clientNavItem({
+		id: 'inicio',
+		label: 'Inicio',
+		shortLabel: 'Inicio',
+		route: '/app',
+		icon: HomeDotIcon,
+		exact: true
+	}),
+	clientNavItem({
+		id: 'explorar',
+		label: 'Explorar',
+		shortLabel: 'Explorar',
+		route: '/app/categorias',
+		icon: SearchIcon
+	}),
+	clientNavItem({
+		id: 'mis-canjes',
+		label: 'Mis canjes',
+		shortLabel: 'Canjes',
+		route: '/app/mis-canjes',
+		icon: GiftIcon
+	}),
+	clientNavItem({
+		id: 'mis-movimientos',
+		label: 'Mis movimientos',
+		shortLabel: 'Movimientos',
+		route: '/app/mis-movimientos',
+		icon: SparklesIcon
+	})
+];
 
 /**
  * Menú del panel de gestión (/panel), única fuente de verdad para el sidebar y el título del header.

@@ -38,6 +38,48 @@ export const Action = {
 } as const;
 export type Action = (typeof Action)[keyof typeof Action];
 
+/** Roles de los usuarios del panel (los CLIENTE se gestionan aparte, en Clientes) */
+export type PanelUserRole = Exclude<Role, typeof Role.CLIENTE>;
+
+/**
+ * Nivel jerárquico para gestionar usuarios del panel: un rol solo crea, edita, restablece la
+ * contraseña o elimina a usuarios de un nivel inferior al suyo (nunca del mismo nivel).
+ */
+export const ROLE_LEVEL: Record<Role, number> = {
+	[Role.SUPERADMIN]: 4,
+	[Role.OWNER]: 3,
+	[Role.ADMIN]: 2,
+	[Role.CAJERO]: 1,
+	[Role.SOCIO]: 1,
+	[Role.CLIENTE]: 0
+};
+
+/** Roles que la API acepta al crear o editar un usuario del panel */
+export const ASSIGNABLE_USER_ROLES = [Role.OWNER, Role.ADMIN, Role.CAJERO, Role.SOCIO] as const;
+export type AssignableUserRole = (typeof ASSIGNABLE_USER_ROLES)[number];
+
+/**
+ * Roles que cada rol ve en Administradores, en el orden de las pestañas: su mismo nivel y los
+ * inferiores. CAJERO y SOCIO no abren esa página.
+ */
+export const LISTABLE_USER_ROLES: Record<Role, readonly PanelUserRole[]> = {
+	[Role.SUPERADMIN]: [Role.SUPERADMIN, Role.OWNER, Role.ADMIN, Role.CAJERO, Role.SOCIO],
+	[Role.OWNER]: [Role.OWNER, Role.ADMIN, Role.CAJERO, Role.SOCIO],
+	[Role.ADMIN]: [Role.ADMIN, Role.CAJERO, Role.SOCIO],
+	[Role.CAJERO]: [],
+	[Role.CLIENTE]: [],
+	[Role.SOCIO]: []
+};
+
+/**
+ * Roles que ven el resumen de inicio del panel (`/resumen/admin`). En el backend no es un módulo:
+ * la ruta usa `require_role(Role.OWNER, Role.ADMIN)`, así que SUPERADMIN no tiene acceso.
+ */
+export const RESUMEN_ADMIN_ROLES: readonly Role[] = [Role.OWNER, Role.ADMIN];
+
+/** Roles que ven el resumen de sus propias compras del día (`/resumen/cajero`, `require_role(CAJERO)`) */
+export const RESUMEN_CAJERO_ROLES: readonly Role[] = [Role.CAJERO];
+
 type ModulePermissions = Partial<Record<Module, readonly Action[]>>;
 
 const ALL_ACTIONS: readonly Action[] = [Action.CREATE, Action.READ, Action.UPDATE, Action.DELETE];

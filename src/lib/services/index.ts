@@ -7,3 +7,6 @@ export * from './configPuntos.service';
 export * from './vale.service';
 export * from './cliente.service';
 export * from './canje.service';
+export * from './administrador.service';
+export * from './operacion.service';
+export * from './resumen.service';

@@ -11,3 +11,6 @@ export * from './configPuntos.interface';
 export * from './vale.interface';
 export * from './cliente.interface';
 export * from './canje.interface';
+export * from './administrador.interface';
+export * from './operacion.interface';
+export * from './resumen.interface';

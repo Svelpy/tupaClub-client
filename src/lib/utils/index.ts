@@ -9,3 +9,5 @@ export * from './rbac.utils';
 export * from './navigation';
 export * from './pagination';
 export * from './canje';
+export * from './puntos';
+export * from './maps';
