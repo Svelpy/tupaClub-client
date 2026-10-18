@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button, Input } from '#lib/components/ui/index.ts';
-	import { AlertTriangleIcon, EyeIcon, EyeOffIcon } from '#lib/icons/outline/index.ts';
+	import { AlertTriangleIcon } from '#lib/icons/outline/index.ts';
 	import { errorService, perfilService } from '#lib/services/index.ts';
 	import { alert, validateSchema } from '#lib/utils/index.ts';
 	import { PERFIL_PASSWORD_MIN, changePerfilPasswordSchema } from '#lib/zod/index.ts';
@@ -63,7 +63,7 @@
 	}
 </script>
 
-{#snippet visibilityToggle(field: PasswordField)}
+<!-- {#snippet visibilityToggle(field: PasswordField)}
 	<button
 		type="button"
 		onclick={() => (visible[field] = !visible[field])}
@@ -78,7 +78,7 @@
 			<EyeOffIcon class="size-5" />
 		{/if}
 	</button>
-{/snippet}
+{/snippet} -->
 
 <section
 	aria-labelledby="perfil-password"
