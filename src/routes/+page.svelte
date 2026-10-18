@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { asset, resolve } from '$app/paths';
+	import { InstallAppButton } from '#lib/components/features/landing/index.ts';
 	import { MainLayout } from '#lib/components/layout/index.ts';
 	import { Button } from '#lib/components/ui/index.ts';
 	import { APP_SITE_CONFIG } from '#lib/constants/index.ts';
@@ -73,6 +74,8 @@
 						Ya tengo cuenta
 					</Button>
 				</div>
+				<!-- Solo aparece si el navegador permite instalar (Android/Chrome) o en iPhone/iPad -->
+				<InstallAppButton />
 			</div>
 
 			<!-- Tarjeta de muestra, al estilo del resumen de puntos del cliente -->

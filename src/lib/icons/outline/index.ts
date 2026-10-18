@@ -87,3 +87,5 @@ export { default as GiftIcon } from './giftIcon.svelte';
 export { default as ShieldIcon } from './shieldIcon.svelte';
 export { default as BriefcaseIcon } from './briefcaseIcon.svelte';
 export { default as Menu2Icon } from './menu2Icon.svelte';
+export { default as ShareIcon } from './shareIcon.svelte';
+export { default as SquarePlusIcon } from './squarePlusIcon.svelte';
