@@ -53,7 +53,7 @@
 
 <section
 	aria-busy={isLoading}
-	class="mt-6 overflow-hidden rounded-2xl border border-light-one_d bg-light-one dark:border-dark-one_d dark:bg-dark-one"
+	class="mt-4 overflow-hidden rounded-2xl border border-light-one_d bg-light-one dark:border-dark-one_d dark:bg-dark-one"
 >
 	{#if error && !hasData}
 		<div role="alert" class="flex flex-col items-center gap-3 px-4 py-12 text-center">

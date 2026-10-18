@@ -5,6 +5,7 @@ export { default as ClienteDeleteModal } from './clienteDeleteModal.svelte';
 export { default as ClienteDetailModal } from './clienteDetailModal.svelte';
 export { default as ClienteFormModal } from './clienteFormModal.svelte';
 export { default as ClienteList } from './clienteList.svelte';
+export { default as ClienteOrderTabs } from './clienteOrderTabs.svelte';
 export { default as ClientePasswordModal } from './clientePasswordModal.svelte';
 export { default as ClienteRow } from './clienteRow.svelte';
 export { default as ClienteTable } from './clienteTable.svelte';

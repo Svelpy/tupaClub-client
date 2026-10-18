@@ -7,6 +7,7 @@
 		ClienteDetailModal,
 		ClienteFormModal,
 		ClienteList,
+		ClienteOrderTabs,
 		ClientePasswordModal
 	} from '#lib/components/features/panel/clientes/index.ts';
 	import { Action, Module } from '#lib/config/index.ts';
@@ -27,6 +28,7 @@
 	let perPage = $state<number>(PAGINATION.DEFAULT_PER_PAGE);
 	let totalPages = $state(1);
 	let total = $state(0);
+	let orderByPoints = $state(false);
 	let isLoading = $state(false);
 	let loadError = $state('');
 	let isFormOpen = $state(false);
@@ -44,7 +46,11 @@
 		loadError = '';
 		isLoading = true;
 		try {
-			const response = await clienteService.list({ page, per_page: perPage });
+			const response = await clienteService.list({
+				page,
+				per_page: perPage,
+				order_by_points: orderByPoints
+			});
 			if (requestId !== lastRequestId) return;
 			clientes = response.data;
 			currentPage = response.page;
@@ -65,6 +71,13 @@
 		loadClientes(PAGINATION.DEFAULT_PAGE);
 	}
 
+	function handleOrderChange(value: boolean) {
+		orderByPoints = value;
+		// Se limpia para que el listado muestre el esqueleto y no el orden anterior
+		clientes = [];
+		loadClientes(PAGINATION.DEFAULT_PAGE);
+	}
+
 	function openCreate() {
 		editingCliente = null;
 		isFormOpen = true;
@@ -80,6 +93,12 @@
 	function handleSaved(saved: ClienteDetail) {
 		if (editingCliente) {
 			clientes = clientes.map((cliente) => (cliente.id === saved.id ? saved : cliente));
+			return;
+		}
+
+		// En el ranking su posición depende de los puntos: se recarga la página
+		if (orderByPoints) {
+			loadClientes(currentPage);
 			return;
 		}
 
@@ -115,22 +134,24 @@
 <MainLayout title="Clientes" noIndex class="container mx-auto">
 	<PageHeader title="Clientes" actions={canCreate ? createButton : undefined} />
 
-	<ClienteList
-		{clientes}
-		{currentPage}
-		{totalPages}
-		{perPage}
-		{total}
-		{isLoading}
-		error={loadError}
-		onPageChange={loadClientes}
-		onPerPageChange={handlePerPageChange}
-		onRetry={() => loadClientes(currentPage)}
-		onView={(cliente) => (viewingCliente = cliente)}
-		onEdit={canUpdate ? openEdit : undefined}
-		onResetPassword={canUpdate ? (cliente) => (passwordCliente = cliente) : undefined}
-		onDelete={canDelete ? (cliente) => (deletingCliente = cliente) : undefined}
-	/>
+	<ClienteOrderTabs {orderByPoints} total={isLoading ? null : total} onChange={handleOrderChange}>
+		<ClienteList
+			{clientes}
+			{currentPage}
+			{totalPages}
+			{perPage}
+			{total}
+			{isLoading}
+			error={loadError}
+			onPageChange={loadClientes}
+			onPerPageChange={handlePerPageChange}
+			onRetry={() => loadClientes(currentPage)}
+			onView={(cliente) => (viewingCliente = cliente)}
+			onEdit={canUpdate ? openEdit : undefined}
+			onResetPassword={canUpdate ? (cliente) => (passwordCliente = cliente) : undefined}
+			onDelete={canDelete ? (cliente) => (deletingCliente = cliente) : undefined}
+		/>
+	</ClienteOrderTabs>
 
 	<ClienteFormModal
 		isOpen={isFormOpen}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Table, TableBody, TableHead, TableHeader, TableRow } from '#lib/components/ui/index.ts';
-	import type { Negocio, NegocioListItem } from '#lib/interfaces/index.ts';
+	import type { Negocio, NegocioListItem, Sucursal } from '#lib/interfaces/index.ts';
 	import NegocioRow from './negocioRow.svelte';
 
 	interface Props {
@@ -10,9 +10,20 @@
 		onImage: (negocio: Negocio) => void;
 		onDelete: (negocio: Negocio) => void;
 		onAddSucursal: (negocio: Negocio) => void;
+		onEditSucursal: (negocio: Negocio, sucursal: Sucursal) => void;
+		onDeleteSucursal: (sucursal: Sucursal) => void;
 	}
 
-	let { items, onView, onEdit, onImage, onDelete, onAddSucursal }: Props = $props();
+	let {
+		items,
+		onView,
+		onEdit,
+		onImage,
+		onDelete,
+		onAddSucursal,
+		onEditSucursal,
+		onDeleteSucursal
+	}: Props = $props();
 
 	// Total de columnas (incluidas las que se ocultan por breakpoint)
 	const COLUMNS = 6;
@@ -43,6 +54,8 @@
 					{onImage}
 					{onDelete}
 					{onAddSucursal}
+					{onEditSucursal}
+					{onDeleteSucursal}
 				/>
 			{/each}
 		</TableBody>

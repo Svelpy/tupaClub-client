@@ -3,7 +3,7 @@
 	import { Button, Pagination, Select } from '#lib/components/ui/index.ts';
 	import { PAGINATION } from '#lib/constants/index.ts';
 	import { AlertTriangleIcon, BuildindStoreIcon, RefreshIcon } from '#lib/icons/outline/index.ts';
-	import type { Negocio, NegocioListItem } from '#lib/interfaces/index.ts';
+	import type { Negocio, NegocioListItem, Sucursal } from '#lib/interfaces/index.ts';
 	import NegocioCard from './negocioCard.svelte';
 	import NegocioTable from './negocioTable.svelte';
 
@@ -25,6 +25,8 @@
 		onImage: (negocio: Negocio) => void;
 		onDelete: (negocio: Negocio) => void;
 		onAddSucursal: (negocio: Negocio) => void;
+		onEditSucursal: (negocio: Negocio, sucursal: Sucursal) => void;
+		onDeleteSucursal: (sucursal: Sucursal) => void;
 	}
 
 	let {
@@ -43,7 +45,9 @@
 		onEdit,
 		onImage,
 		onDelete,
-		onAddSucursal
+		onAddSucursal,
+		onEditSucursal,
+		onDeleteSucursal
 	}: Props = $props();
 
 	function handlePerPageChange(event: Event & { currentTarget: HTMLSelectElement }) {
@@ -115,13 +119,24 @@
 						{onImage}
 						{onDelete}
 						{onAddSucursal}
+						{onEditSucursal}
+						{onDeleteSucursal}
 					/>
 				{/each}
 			</div>
 
 			<!-- Tablet y escritorio: tabla -->
 			<div class="hidden md:block">
-				<NegocioTable {items} {onView} {onEdit} {onImage} {onDelete} {onAddSucursal} />
+				<NegocioTable
+					{items}
+					{onView}
+					{onEdit}
+					{onImage}
+					{onDelete}
+					{onAddSucursal}
+					{onEditSucursal}
+					{onDeleteSucursal}
+				/>
 			</div>
 		</div>
 

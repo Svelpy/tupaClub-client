@@ -2,19 +2,27 @@
 	import { NegocioAvatar } from '#lib/components/features/panel/negocios/index.ts';
 	import { Button, Input, Modal } from '#lib/components/ui/index.ts';
 	import { AlertTriangleIcon, MapPinIcon } from '#lib/icons/outline/index.ts';
-	import type { Negocio, SucursalDetail } from '#lib/interfaces/index.ts';
+	import type {
+		Negocio,
+		Sucursal,
+		SucursalDetail,
+		UpdateSucursalRequest
+	} from '#lib/interfaces/index.ts';
 	import { errorService, sucursalService } from '#lib/services/index.ts';
 	import { alert, validateSchema } from '#lib/utils/index.ts';
-	import { createSucursalSchema } from '#lib/zod/index.ts';
+	import { createSucursalSchema, updateSucursalSchema } from '#lib/zod/index.ts';
 
 	interface Props {
-		/** Negocio al que se agrega la sucursal; null = modal cerrado */
+		/** Negocio al que pertenece la sucursal; null = modal cerrado */
 		negocio: Negocio | null;
+		/** Si se pasa, el formulario edita esa sucursal; si no, agrega una nueva */
+		sucursal?: Sucursal | null;
 		onClose: () => void;
 		onCreated?: (sucursal: SucursalDetail) => void;
+		onUpdated?: (sucursal: SucursalDetail) => void;
 	}
 
-	let { negocio, onClose, onCreated }: Props = $props();
+	let { negocio, sucursal = null, onClose, onCreated, onUpdated }: Props = $props();
 
 	const FORM_ID = 'sucursal-form';
 
@@ -30,21 +38,36 @@
 	/** Botón que envió el formulario: cerrar o seguir agregando */
 	let addAnother = false;
 
+	const isEdit = $derived(!!sucursal);
 	const mapsUrl = $derived(/^https?:\/\//i.test(urlUbicacion.trim()) ? urlUbicacion.trim() : null);
 
-	function resetForm() {
-		nombre = '';
-		direccion = '';
-		telefono = '';
-		urlUbicacion = '';
+	// Solo los campos que difieren de la sucursal original (body del PATCH)
+	const changes = $derived.by((): UpdateSucursalRequest => {
+		if (!sucursal) return {};
+		const diff: UpdateSucursalRequest = {};
+		const nextTelefono = telefono.trim() || null;
+		const nextUrl = urlUbicacion.trim() || null;
+		if (nombre.trim() !== sucursal.nombre) diff.nombre = nombre.trim();
+		if (direccion.trim() !== sucursal.direccion) diff.direccion = direccion.trim();
+		if (nextTelefono !== (sucursal.telefono ?? null)) diff.telefono = nextTelefono;
+		if (nextUrl !== (sucursal.url_ubicacion ?? null)) diff.url_ubicacion = nextUrl;
+		return diff;
+	});
+	const hasChanges = $derived(Object.keys(changes).length > 0);
+
+	function fillForm(source: Sucursal | null) {
+		nombre = source?.nombre ?? '';
+		direccion = source?.direccion ?? '';
+		telefono = source?.telefono ?? '';
+		urlUbicacion = source?.url_ubicacion ?? '';
 		fieldErrors = {};
 		formError = '';
 	}
 
-	// Formulario limpio cada vez que se abre para un negocio
+	// Cargar los datos cada vez que se abre (vacío al agregar, la sucursal al editar)
 	$effect(() => {
 		if (negocio) {
-			resetForm();
+			fillForm(sucursal);
 			createdCount = 0;
 		}
 	});
@@ -59,8 +82,9 @@
 		event.preventDefault();
 		if (!negocio) return;
 		formError = '';
+		if (isEdit && !hasChanges) return;
 
-		const result = validateSchema(createSucursalSchema, {
+		const result = validateSchema(isEdit ? updateSucursalSchema : createSucursalSchema, {
 			negocio_id: negocio.id,
 			nombre,
 			direccion,
@@ -73,6 +97,11 @@
 			return;
 		}
 		fieldErrors = {};
+
+		if (sucursal) {
+			await submitUpdate(sucursal);
+			return;
+		}
 
 		isLoading = true;
 		let created: SucursalDetail | null = null;
@@ -89,17 +118,33 @@
 		if (!created) return;
 		if (addAnother) {
 			createdCount += 1;
-			resetForm();
+			fillForm(null);
 			document.getElementById('sucursal-nombre')?.focus();
 		} else {
 			handleClose();
 		}
 	}
+
+	async function submitUpdate(target: Sucursal) {
+		isLoading = true;
+		let updated: SucursalDetail | null = null;
+		try {
+			updated = await sucursalService.update(target.id, changes);
+			alert('success', `Sucursal «${updated.nombre}» actualizada correctamente.`);
+			onUpdated?.(updated);
+		} catch (error) {
+			formError = errorService.getMessage(error);
+		} finally {
+			isLoading = false;
+		}
+
+		if (updated) handleClose();
+	}
 </script>
 
 <Modal
 	isOpen={!!negocio}
-	title="Agregar sucursal"
+	title={isEdit ? 'Editar sucursal' : 'Agregar sucursal'}
 	onClose={handleClose}
 	maxWidth="mx-auto max-w-[calc(100vw-1.5rem)] sm:w-[36rem]"
 >
@@ -111,7 +156,9 @@
 			>
 				<NegocioAvatar {negocio} class="bg-light-one dark:bg-dark-one" />
 				<div class="min-w-0">
-					<p class="text-xs text-light-two_d dark:text-dark-four">Nueva sucursal para</p>
+					<p class="text-xs text-light-two_d dark:text-dark-four">
+						{isEdit ? 'Sucursal de' : 'Nueva sucursal para'}
+					</p>
 					<p class="truncate font-semibold text-light-two dark:text-dark-two">{negocio.nombre}</p>
 				</div>
 				{#if createdCount > 0}
@@ -205,25 +252,45 @@
 
 	{#snippet footer()}
 		<div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-			<Button
-				type="submit"
-				form={FORM_ID}
-				variant="secondary"
-				disabled={isLoading}
-				onclick={() => (addAnother = true)}
-				class="w-full sm:w-auto"
-			>
-				Guardar y agregar otra
-			</Button>
-			<Button
-				type="submit"
-				form={FORM_ID}
-				loading={isLoading}
-				onclick={() => (addAnother = false)}
-				class="w-full sm:w-auto"
-			>
-				Guardar sucursal
-			</Button>
+			{#if isEdit}
+				<Button
+					variant="outline"
+					onclick={handleClose}
+					disabled={isLoading}
+					class="w-full sm:w-auto"
+				>
+					Cancelar
+				</Button>
+				<Button
+					type="submit"
+					form={FORM_ID}
+					loading={isLoading}
+					disabled={!hasChanges}
+					class="w-full sm:w-auto"
+				>
+					Guardar cambios
+				</Button>
+			{:else}
+				<Button
+					type="submit"
+					form={FORM_ID}
+					variant="secondary"
+					disabled={isLoading}
+					onclick={() => (addAnother = true)}
+					class="w-full sm:w-auto"
+				>
+					Guardar y agregar otra
+				</Button>
+				<Button
+					type="submit"
+					form={FORM_ID}
+					loading={isLoading}
+					onclick={() => (addAnother = false)}
+					class="w-full sm:w-auto"
+				>
+					Guardar sucursal
+				</Button>
+			{/if}
 		</div>
 	{/snippet}
 </Modal>

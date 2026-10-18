@@ -11,7 +11,7 @@
 		PhotoIcon,
 		PlusIcon
 	} from '#lib/icons/outline/index.ts';
-	import type { Negocio, NegocioListItem } from '#lib/interfaces/index.ts';
+	import type { Negocio, NegocioListItem, Sucursal } from '#lib/interfaces/index.ts';
 	import { alert, formatDateTime, formatValue } from '#lib/utils/index.ts';
 	import NegocioAvatar from './negocioAvatar.svelte';
 	import NegocioSucursales from './negocioSucursales.svelte';
@@ -24,9 +24,12 @@
 		onEdit: (negocio: Negocio) => void;
 		onImage: (negocio: Negocio) => void;
 		onAddSucursal: (negocio: Negocio) => void;
+		onEditSucursal: (negocio: Negocio, sucursal: Sucursal) => void;
+		onDeleteSucursal: (sucursal: Sucursal) => void;
 	}
 
-	let { item, onClose, onEdit, onImage, onAddSucursal }: Props = $props();
+	let { item, onClose, onEdit, onImage, onAddSucursal, onEditSucursal, onDeleteSucursal }: Props =
+		$props();
 
 	type IconComponent = Component<{ class?: string }>;
 
@@ -207,6 +210,8 @@
 				<NegocioSucursales
 					{sucursales}
 					onAdd={() => onAddSucursal(negocio)}
+					onEdit={(sucursal) => onEditSucursal(negocio, sucursal)}
+					onDelete={onDeleteSucursal}
 					class="sm:grid-cols-2"
 				/>
 			</section>

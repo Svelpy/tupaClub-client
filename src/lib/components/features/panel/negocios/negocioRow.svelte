@@ -18,10 +18,22 @@
 		onImage: (negocio: Negocio) => void;
 		onDelete: (negocio: Negocio) => void;
 		onAddSucursal: (negocio: Negocio) => void;
+		onEditSucursal: (negocio: Negocio, sucursal: Sucursal) => void;
+		onDeleteSucursal: (sucursal: Sucursal) => void;
 	}
 
-	let { negocio, sucursales, colspan, onView, onEdit, onImage, onDelete, onAddSucursal }: Props =
-		$props();
+	let {
+		negocio,
+		sucursales,
+		colspan,
+		onView,
+		onEdit,
+		onImage,
+		onDelete,
+		onAddSucursal,
+		onEditSucursal,
+		onDeleteSucursal
+	}: Props = $props();
 
 	let isExpanded = $state(false);
 
@@ -118,7 +130,12 @@
 			>
 				Sucursales de {negocio.nombre}
 			</p>
-			<NegocioSucursales {sucursales} class="lg:grid-cols-2 xl:grid-cols-3" />
+			<NegocioSucursales
+				{sucursales}
+				onEdit={(sucursal) => onEditSucursal(negocio, sucursal)}
+				onDelete={onDeleteSucursal}
+				class="lg:grid-cols-2 xl:grid-cols-3"
+			/>
 		</TableCell>
 	</TableRow>
 {/if}

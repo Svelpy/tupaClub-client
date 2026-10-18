@@ -52,3 +52,5 @@ export const createSucursalSchema = z.object({
 		})
 		.transform((value) => value || null)
 });
+
+export const updateSucursalSchema = createSucursalSchema;

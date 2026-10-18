@@ -15,9 +15,14 @@ import { buildPaginationQuery } from '#lib/utils/pagination.ts';
 const CLIENTE_ROLE: UserRole = 'CLIENTE';
 
 class ClienteService {
-	async list(params: ClienteListParams = {}): Promise<ClienteListResponse> {
-		const query = buildPaginationQuery(params);
+	async list({
+		order_by_points,
+		...pagination
+	}: ClienteListParams = {}): Promise<ClienteListResponse> {
+		const query = buildPaginationQuery(pagination);
 		query.set('role', CLIENTE_ROLE);
+		// Solo se envía cuando se pide el orden por puntos
+		if (order_by_points) query.set('order_by_points', 'true');
 		return apiFidelityTupa.get<ClienteListResponse>(`/users/?${query}`, {
 			requireAuth: true
 		});

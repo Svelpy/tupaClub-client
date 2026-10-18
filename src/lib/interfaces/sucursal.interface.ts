@@ -18,7 +18,9 @@ export interface CreateSucursalRequest {
 	url_ubicacion: string | null;
 }
 
-/** Sucursal completa con datos de auditoría (respuesta de crear) */
+export type UpdateSucursalRequest = Partial<CreateSucursalRequest>;
+
+/** Sucursal completa con datos de auditoría (respuesta de crear/actualizar) */
 export interface SucursalDetail extends Sucursal {
 	is_deleted: boolean;
 	created_at: string;

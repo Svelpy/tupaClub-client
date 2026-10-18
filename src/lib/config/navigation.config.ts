@@ -2,7 +2,6 @@ import { resolve } from '$app/paths';
 import {
 	ArrowsLeftRightIcon,
 	BriefcaseIcon,
-	BuildindStoreIcon,
 	GiftIcon,
 	HomeDotIcon,
 	SearchIcon,
@@ -120,12 +119,12 @@ export const PANEL_NAVIGATION: NavSection[] = [
 		label: 'Gestión',
 		items: [
 			navItem({ id: 'clientes', label: 'Clientes', route: '/panel/clientes', icon: UsersIcon }),
-			navItem({
-				id: 'mis-sucursales',
-				label: 'Mis sucursales',
-				route: '/panel/mis-sucursales',
-				icon: BuildindStoreIcon
-			}),
+			// navItem({
+			// 	id: 'mis-sucursales',
+			// 	label: 'Mis sucursales',
+			// 	route: '/panel/mis-sucursales',
+			// 	icon: BuildindStoreIcon
+			// }),
 			navItem({ id: 'negocios', label: 'Negocios', route: '/panel/negocios', icon: BriefcaseIcon }),
 			navItem({
 				id: 'administradores',

@@ -24,7 +24,10 @@ export interface Cliente {
 }
 
 /** El rol se fija internamente en el service (siempre CLIENTE) */
-export type ClienteListParams = PaginationParams;
+export interface ClienteListParams extends PaginationParams {
+	/** true = ordenados de más a menos puntos */
+	order_by_points?: boolean;
+}
 
 export type ClienteListResponse = PaginatedResponse<Cliente>;
 

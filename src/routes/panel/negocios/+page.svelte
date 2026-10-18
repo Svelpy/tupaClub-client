@@ -10,7 +10,10 @@
 		NegocioImageModal,
 		NegocioList
 	} from '#lib/components/features/panel/negocios/index.ts';
-	import { SucursalFormModal } from '#lib/components/features/panel/sucursales/index.ts';
+	import {
+		SucursalDeleteModal,
+		SucursalFormModal
+	} from '#lib/components/features/panel/sucursales/index.ts';
 	import { PAGINATION } from '#lib/constants/index.ts';
 	import { PlusIcon } from '#lib/icons/outline/index.ts';
 	import type {
@@ -18,6 +21,7 @@
 		NegocioDetail,
 		NegocioListItem,
 		NegocioTipo,
+		Sucursal,
 		SucursalDetail
 	} from '#lib/interfaces/index.ts';
 	import { errorService, negocioService } from '#lib/services/index.ts';
@@ -36,6 +40,9 @@
 	let imageNegocio = $state<Negocio | null>(null);
 	let deletingNegocio = $state<Negocio | null>(null);
 	let sucursalNegocio = $state<Negocio | null>(null);
+	// null = agregar; con valor = editar esa sucursal (de sucursalNegocio)
+	let editingSucursal = $state<Sucursal | null>(null);
+	let deletingSucursal = $state<Sucursal | null>(null);
 	// Se guarda el id para que el detalle refleje los cambios locales (imagen, sucursales nuevas)
 	let viewingNegocioId = $state<string | null>(null);
 
@@ -141,6 +148,37 @@
 		);
 	}
 
+	function openAddSucursal(negocio: Negocio) {
+		editingSucursal = null;
+		sucursalNegocio = negocio;
+	}
+
+	function openEditSucursal(negocio: Negocio, sucursal: Sucursal) {
+		editingSucursal = sucursal;
+		sucursalNegocio = negocio;
+	}
+
+	function handleSucursalUpdated(sucursal: SucursalDetail) {
+		items = items.map((item) =>
+			item.negocio.id === sucursal.negocio_id
+				? {
+						...item,
+						sucursales: item.sucursales.map((current) =>
+							current.id === sucursal.id ? sucursal : current
+						)
+					}
+				: item
+		);
+	}
+
+	function handleSucursalDeleted({ id, negocio_id }: Sucursal) {
+		items = items.map((item) =>
+			item.negocio.id === negocio_id
+				? { ...item, sucursales: item.sucursales.filter((current) => current.id !== id) }
+				: item
+		);
+	}
+
 	function handleDeleted({ id }: Negocio) {
 		items = items.filter((item) => item.negocio.id !== id);
 		total = Math.max(0, total - 1);
@@ -185,7 +223,9 @@
 		onEdit={openEdit}
 		onImage={(negocio) => (imageNegocio = negocio)}
 		onDelete={(negocio) => (deletingNegocio = negocio)}
-		onAddSucursal={(negocio) => (sucursalNegocio = negocio)}
+		onAddSucursal={openAddSucursal}
+		onEditSucursal={openEditSucursal}
+		onDeleteSucursal={(sucursal) => (deletingSucursal = sucursal)}
 	/>
 
 	<!-- El detalle va antes que los demás modales para que estos se abran encima -->
@@ -194,7 +234,9 @@
 		onClose={() => (viewingNegocioId = null)}
 		onEdit={openEdit}
 		onImage={(negocio) => (imageNegocio = negocio)}
-		onAddSucursal={(negocio) => (sucursalNegocio = negocio)}
+		onAddSucursal={openAddSucursal}
+		onEditSucursal={openEditSucursal}
+		onDeleteSucursal={(sucursal) => (deletingSucursal = sucursal)}
 	/>
 
 	<NegocioFormModal
@@ -216,9 +258,18 @@
 		onDeleted={handleDeleted}
 	/>
 
+	<!-- editingSucursal se conserva al cerrar para que el título no cambie durante la animación -->
 	<SucursalFormModal
 		negocio={sucursalNegocio}
+		sucursal={editingSucursal}
 		onClose={() => (sucursalNegocio = null)}
 		onCreated={handleSucursalCreated}
+		onUpdated={handleSucursalUpdated}
+	/>
+
+	<SucursalDeleteModal
+		sucursal={deletingSucursal}
+		onClose={() => (deletingSucursal = null)}
+		onDeleted={handleSucursalDeleted}
 	/>
 </MainLayout>

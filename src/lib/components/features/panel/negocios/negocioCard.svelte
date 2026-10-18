@@ -15,9 +15,21 @@
 		onImage: (negocio: Negocio) => void;
 		onDelete: (negocio: Negocio) => void;
 		onAddSucursal: (negocio: Negocio) => void;
+		onEditSucursal: (negocio: Negocio, sucursal: Sucursal) => void;
+		onDeleteSucursal: (sucursal: Sucursal) => void;
 	}
 
-	let { negocio, sucursales, onView, onEdit, onImage, onDelete, onAddSucursal }: Props = $props();
+	let {
+		negocio,
+		sucursales,
+		onView,
+		onEdit,
+		onImage,
+		onDelete,
+		onAddSucursal,
+		onEditSucursal,
+		onDeleteSucursal
+	}: Props = $props();
 
 	let isExpanded = $state(false);
 
@@ -82,7 +94,11 @@
 		</button>
 		{#if isExpanded && sucursales.length > 0}
 			<div id={panelId} class="border-t border-light-one_d p-2 dark:border-dark-one_d">
-				<NegocioSucursales {sucursales} />
+				<NegocioSucursales
+					{sucursales}
+					onEdit={(sucursal) => onEditSucursal(negocio, sucursal)}
+					onDelete={onDeleteSucursal}
+				/>
 			</div>
 		{/if}
 	</div>

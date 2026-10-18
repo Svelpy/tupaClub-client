@@ -1,5 +1,12 @@
 <script lang="ts">
-	import { ArrowUpRightIcon, MapPinIcon, PhoneIcon, PlusIcon } from '#lib/icons/outline/index.ts';
+	import {
+		ArrowUpRightIcon,
+		MapPinIcon,
+		PencilIcon,
+		PhoneIcon,
+		PlusIcon,
+		TrashIcon
+	} from '#lib/icons/outline/index.ts';
 	import type { Sucursal } from '#lib/interfaces/index.ts';
 	import { cn, formatDate } from '#lib/utils/index.ts';
 
@@ -7,11 +14,17 @@
 		sucursales: Sucursal[];
 		/** Si se pasa, el estado vacío muestra un botón para agregar la primera sucursal */
 		onAdd?: () => void;
+		/** Si se pasan, cada sucursal muestra botones para editarla o eliminarla */
+		onEdit?: (sucursal: Sucursal) => void;
+		onDelete?: (sucursal: Sucursal) => void;
 		/** Clases del grid (p. ej. columnas por breakpoint) */
 		class?: string;
 	}
 
-	let { sucursales, onAdd, class: className }: Props = $props();
+	let { sucursales, onAdd, onEdit, onDelete, class: className }: Props = $props();
+
+	const actionClass =
+		'inline-flex size-8 shrink-0 items-center justify-center rounded-md text-light-two_d transition-colors focus-visible:ring-2 focus-visible:ring-light-three focus-visible:outline-none dark:text-dark-two_d dark:focus-visible:ring-dark-three';
 
 	// Solo se enlazan URLs http(s) para no abrir esquemas inesperados
 	const isSafeUrl = (url: string | null): url is string => !!url && /^https?:\/\//i.test(url);
@@ -49,9 +62,39 @@
 					<MapPinIcon class="size-4" />
 				</span>
 				<div class="min-w-0 flex-1 space-y-1">
-					<p class="truncate text-sm font-semibold text-light-two dark:text-dark-two">
-						{sucursal.nombre}
-					</p>
+					<div class="flex items-start gap-1">
+						<p
+							class="min-w-0 flex-1 truncate pt-0.5 text-sm font-semibold text-light-two dark:text-dark-two"
+						>
+							{sucursal.nombre}
+						</p>
+						{#if onEdit || onDelete}
+							<div class="-mt-1.5 -mr-1.5 flex shrink-0 items-center">
+								{#if onEdit}
+									<button
+										type="button"
+										onclick={() => onEdit(sucursal)}
+										title="Editar sucursal"
+										aria-label="Editar sucursal {sucursal.nombre}"
+										class="{actionClass} hover:bg-light-one_d hover:text-light-two dark:hover:bg-dark-one_d dark:hover:text-dark-two"
+									>
+										<PencilIcon class="size-4" />
+									</button>
+								{/if}
+								{#if onDelete}
+									<button
+										type="button"
+										onclick={() => onDelete(sucursal)}
+										title="Eliminar sucursal"
+										aria-label="Eliminar sucursal {sucursal.nombre}"
+										class="{actionClass} hover:bg-light-error/10 hover:text-light-error dark:hover:bg-dark-error/10 dark:hover:text-dark-error"
+									>
+										<TrashIcon class="size-4" />
+									</button>
+								{/if}
+							</div>
+						{/if}
+					</div>
 					<p class="line-clamp-2 text-xs text-light-two_d dark:text-dark-two_d">
 						{sucursal.direccion}
 					</p>
