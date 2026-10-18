@@ -21,8 +21,8 @@
 		onPerPageChange?: (perPage: number) => void;
 		onRetry?: () => void;
 		/** Acciones opcionales: las que no se pasan no se muestran (p. ej. un filtro ya aplicado) */
-		onFilterReceptor?: (operacion: OperacionListItem) => void;
-		onFilterEmisor?: (operacion: OperacionListItem) => void;
+		onFilterReceptor?: (item: OperacionListItem) => void;
+		onFilterEmisor?: (item: OperacionListItem) => void;
 	}
 
 	let {
@@ -101,8 +101,8 @@
 		<div class={['transition-opacity', isLoading && 'pointer-events-none opacity-60']}>
 			<!-- Móvil y tablet pequeña: tarjetas -->
 			<div class="grid gap-3 p-3 sm:grid-cols-2 md:hidden">
-				{#each operaciones as operacion (operacion.id)}
-					<OperacionCard {operacion} {onFilterReceptor} {onFilterEmisor} />
+				{#each operaciones as item (item.operacion.id)}
+					<OperacionCard {item} {onFilterReceptor} {onFilterEmisor} />
 				{/each}
 			</div>
 

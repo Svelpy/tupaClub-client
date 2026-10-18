@@ -20,13 +20,19 @@ export interface RoleAccess {
 	 * sin habilitar todo lo que cuelga de ella.
 	 */
 	exactRoutes?: readonly RouteId[];
+	/**
+	 * Se deniegan aunque `routes` las cubra (también sus subrutas). Para quitar una página puntual
+	 * a un rol que abre todo un área (p. ej. el perfil a SUPERADMIN, que abre todo '/panel').
+	 */
+	excludedRoutes?: readonly RouteId[];
 }
 
 const PANEL_ADMIN: RoleAccess = { home: '/panel', routes: ['/panel'] };
 
 /** `Record<Role, ...>` obliga a configurar aquí cualquier rol nuevo. Lo no listado se deniega. */
 export const ROLE_ACCESS: Record<Role, RoleAccess> = {
-	[Role.SUPERADMIN]: PANEL_ADMIN,
+	// SUPERADMIN no tiene perfil propio
+	[Role.SUPERADMIN]: { ...PANEL_ADMIN, excludedRoutes: ['/panel/perfil'] },
 	[Role.OWNER]: PANEL_ADMIN,
 	[Role.ADMIN]: PANEL_ADMIN,
 	[Role.CAJERO]: {
@@ -38,10 +44,12 @@ export const ROLE_ACCESS: Record<Role, RoleAccess> = {
 			'/panel/categorias',
 			'/panel/vales',
 			'/panel/operaciones',
+			'/panel/movimientos',
 			'/panel/canjes',
-			'/panel/configuracion-puntos'
+			'/panel/configuracion-puntos',
+			'/panel/perfil'
 		]
 	},
-	[Role.SOCIO]: { home: '/panel/canjes', routes: ['/panel/canjes'] },
+	[Role.SOCIO]: { home: '/panel/canjes', routes: ['/panel/canjes', '/panel/perfil'] },
 	[Role.CLIENTE]: { home: '/app', routes: ['/app'] }
 };

@@ -1,5 +1,6 @@
 import type { Role } from '#lib/config/permissions.config.ts';
 import type { CanjeStatus } from '#lib/interfaces/canje.interface.ts';
+import type { MovimientoTipo } from '#lib/interfaces/movimiento.interface.ts';
 import type { NegocioTipo } from '#lib/interfaces/negocio.interface.ts';
 import type { NivelCliente } from '#lib/interfaces/resumen.interface.ts';
 
@@ -24,6 +25,13 @@ export const CANJE_STATUS_LABEL: Record<CanjeStatus, string> = {
 	CANJEADO: 'Canjeado',
 	EXPIRADO: 'Expirado',
 	CANCELADO: 'Cancelado'
+};
+
+/** Etiquetas de tipo de movimiento de puntos (valores que devuelve la API) */
+export const MOVIMIENTO_TIPO_LABEL: Record<MovimientoTipo, string> = {
+	ACUMULA: 'Acumulación',
+	CANJE: 'Canje',
+	AJUSTE: 'Ajuste'
 };
 
 /** Etiquetas de rol de usuario (valores que devuelve la API) */

@@ -1,54 +1,49 @@
 <script lang="ts">
-	import { tick } from 'svelte';
-	import { Button, Input, Modal } from '#lib/components/ui/index.ts';
+	import { Button, Modal } from '#lib/components/ui/index.ts';
 	import { AlertTriangleIcon, CircleCheckIcon } from '#lib/icons/outline/index.ts';
-	import type { CanjeDetail } from '#lib/interfaces/index.ts';
+	import type { Canje, CanjeConsulta } from '#lib/interfaces/index.ts';
 	import { canjeService, errorService } from '#lib/services/index.ts';
-	import { formatCurrency, formatNumber, formatValue, validateSchema } from '#lib/utils/index.ts';
-	import { CANJE_CODIGO_LENGTH, redeemCanjeSchema } from '#lib/zod/index.ts';
+	import { formatNumber, getCanjeStatus } from '#lib/utils/index.ts';
+	import { CANJE_CODIGO_LENGTH } from '#lib/zod/index.ts';
+	import CanjeBuscarCodigo from './canjeBuscarCodigo.svelte';
+	import CanjeConsultaCard from './canjeConsultaCard.svelte';
 
 	interface Props {
 		isOpen: boolean;
 		onClose: () => void;
-		onRedeemed: (canje: CanjeDetail) => void;
+		onRedeemed: (canje: Canje) => void;
 	}
 
 	let { isOpen, onClose, onRedeemed }: Props = $props();
 
-	const FORM_ID = 'canje-redeem-form';
-	const INPUT_ID = 'canje-codigo';
-
-	let codigo = $state('');
+	// 1. Se busca el canje por código  2. Se revisa su estado y titular  3. Se confirma
+	let consulta = $state<CanjeConsulta | null>(null);
+	let consultadoEn = $state(Date.now());
+	let ultimoCodigo = $state('');
 	let isLoading = $state(false);
-	let fieldErrors = $state<Record<string, string>>({});
 	let formError = $state('');
-	// Con valor, el modal muestra el resumen del canje recién confirmado
-	let redeemed = $state<CanjeDetail | null>(null);
+	// Con valor, el modal muestra el canje recién confirmado
+	let redeemed = $state<CanjeConsulta | null>(null);
 
-	// Solo dígitos y hasta la longitud del código (también al pegar "0012 3456")
-	function setCodigo(value: string | number | null | undefined) {
-		codigo = String(value ?? '')
-			.replace(/\D/g, '')
-			.slice(0, CANJE_CODIGO_LENGTH);
-	}
-
-	async function focusCodigo() {
-		await tick();
-		document.getElementById(INPUT_ID)?.focus();
-	}
+	const canRedeem = $derived(
+		!!consulta && getCanjeStatus(consulta.canje, consultadoEn) === 'PENDIENTE'
+	);
+	const clienteNombre = $derived(
+		redeemed
+			? `${redeemed.usuario_cliente.nombre} ${redeemed.usuario_cliente.apellidos ?? ''}`.trim()
+			: ''
+	);
 
 	function resetForm() {
-		codigo = '';
-		fieldErrors = {};
+		consulta = null;
+		ultimoCodigo = '';
 		formError = '';
 		redeemed = null;
 	}
 
-	// Formulario vacío y con el foco en el código cada vez que se abre
+	// Siempre empieza en el buscador cada vez que se abre
 	$effect(() => {
-		if (!isOpen) return;
-		resetForm();
-		focusCodigo();
+		if (isOpen) resetForm();
 	});
 
 	function handleClose() {
@@ -57,34 +52,36 @@
 		onClose();
 	}
 
-	function redeemAnother() {
-		resetForm();
-		focusCodigo();
+	function handleFound(found: CanjeConsulta) {
+		consulta = found;
+		consultadoEn = Date.now();
+		ultimoCodigo = found.canje.codigo_canje;
+		formError = '';
 	}
 
-	async function handleSubmit(event: SubmitEvent) {
-		event.preventDefault();
-		if (isLoading) return;
+	// Vuelve al buscador con el último código para corregirlo
+	function searchAgain() {
+		consulta = null;
 		formError = '';
+	}
 
-		const result = validateSchema(redeemCanjeSchema, { codigo_canje: codigo });
-		if (!result.success) {
-			fieldErrors = result.errors;
-			return;
-		}
-		fieldErrors = {};
+	function redeemAnother() {
+		resetForm();
+	}
+
+	async function handleRedeem() {
+		if (!consulta || !canRedeem || isLoading) return;
+		formError = '';
 
 		isLoading = true;
 		try {
-			redeemed = await canjeService.redeem(result.data);
-			onRedeemed(redeemed);
+			redeemed = await canjeService.redeem(consulta.canje.id);
+			onRedeemed(redeemed.canje);
 		} catch (error) {
 			formError = errorService.getMessage(error);
 		} finally {
 			isLoading = false;
 		}
-
-		if (!redeemed) focusCodigo();
 	}
 </script>
 
@@ -92,7 +89,7 @@
 	{isOpen}
 	title="Confirmar canje"
 	onClose={handleClose}
-	maxWidth="mx-auto max-w-[calc(100vw-1.5rem)] sm:w-[28rem]"
+	maxWidth="mx-auto max-w-[calc(100vw-1.5rem)] sm:w-[30rem]"
 >
 	{#if redeemed}
 		<div role="status" class="flex flex-col items-center gap-4 text-center">
@@ -104,41 +101,22 @@
 			<div>
 				<p class="text-lg font-semibold text-light-two dark:text-dark-two">Canje confirmado</p>
 				<p class="text-sm text-light-two_d dark:text-dark-two_d">
-					Ya puedes entregar el vale al cliente.
+					Entrega <strong class="text-light-two dark:text-dark-two">{redeemed.vale.nombre}</strong>
+					a {clienteNombre}.
 				</p>
 			</div>
-
-			<dl
-				class="w-full divide-y divide-light-one_d rounded-xl border border-light-one_d text-left text-sm dark:divide-dark-one_d dark:border-dark-one_d"
+			<p
+				class="w-full rounded-xl bg-light-one_d px-4 py-2.5 text-sm text-light-two_d dark:bg-dark-one_d dark:text-dark-two_d"
 			>
-				<div class="flex justify-between gap-3 px-4 py-2.5">
-					<dt class="text-light-two_d dark:text-dark-two_d">Código</dt>
-					<dd class="font-mono tracking-wider text-light-two tabular-nums dark:text-dark-two">
-						{redeemed.codigo_canje}
-					</dd>
-				</div>
-				<div class="flex justify-between gap-3 px-4 py-2.5">
-					<dt class="text-light-two_d dark:text-dark-two_d">Puntos canjeados</dt>
-					<dd class="font-semibold text-light-three tabular-nums dark:text-dark-three">
-						{formatNumber(redeemed.total_puntos)} pts
-					</dd>
-				</div>
-				<div class="flex justify-between gap-3 px-4 py-2.5">
-					<dt class="text-light-two_d dark:text-dark-two_d">Valor del vale</dt>
-					<dd class="font-semibold text-light-two tabular-nums dark:text-dark-two">
-						{formatCurrency(redeemed.total_costo)}
-					</dd>
-				</div>
-				<div class="flex justify-between gap-3 px-4 py-2.5">
-					<dt class="text-light-two_d dark:text-dark-two_d">Referencia</dt>
-					<dd class="text-right text-light-two dark:text-dark-two">
-						{formatValue(redeemed.referencia)}
-					</dd>
-				</div>
-			</dl>
+				Se usaron
+				<span class="font-semibold text-light-three tabular-nums dark:text-dark-three">
+					{formatNumber(redeemed.canje.total_puntos)} pts
+				</span>
+				del cliente para este vale.
+			</p>
 		</div>
-	{:else}
-		<form id={FORM_ID} onsubmit={handleSubmit} novalidate class="space-y-5">
+	{:else if consulta}
+		<div class="space-y-4">
 			{#if formError}
 				<div
 					role="alert"
@@ -149,36 +127,22 @@
 				</div>
 			{/if}
 
-			<p class="text-sm text-light-two_d dark:text-dark-two_d">
-				Pide al cliente el código de {CANJE_CODIGO_LENGTH} dígitos que aparece en su app. Al confirmarlo
-				el canje queda como canjeado y no se puede deshacer.
-			</p>
+			<CanjeConsultaCard {consulta} now={consultadoEn} />
 
-			<div>
-				<Input
-					id={INPUT_ID}
-					label="Código de canje"
-					placeholder={'0'.repeat(CANJE_CODIGO_LENGTH)}
-					size="xl"
-					inputmode="numeric"
-					autocomplete="off"
-					spellcheck={false}
-					bind:value={() => codigo, setCodigo}
-					error={fieldErrors.codigo_canje}
-					aria-invalid={!!fieldErrors.codigo_canje}
-					aria-describedby="canje-codigo-count"
-					disabled={isLoading}
-					required
-					class="[&_input]:text-center [&_input]:font-mono [&_input]:tracking-[0.4em] [&_input]:tabular-nums"
-				/>
-				<p
-					id="canje-codigo-count"
-					class="mt-1 text-right text-xs text-light-two_d tabular-nums dark:text-dark-two_d"
-				>
-					{codigo.length}/{CANJE_CODIGO_LENGTH} dígitos
+			{#if canRedeem}
+				<p class="text-sm text-light-two_d dark:text-dark-two_d">
+					Comprueba que quien presenta el código sea el titular. Al confirmar, el canje queda como
+					<strong class="text-light-two dark:text-dark-two">canjeado</strong> y no se puede deshacer.
 				</p>
-			</div>
-		</form>
+			{/if}
+		</div>
+	{:else}
+		<CanjeBuscarCodigo
+			id="canje-redeem"
+			description="Pide al cliente el código de {CANJE_CODIGO_LENGTH} dígitos que aparece en su app. Antes de confirmar verás el detalle del canje."
+			initialCodigo={ultimoCodigo}
+			onFound={handleFound}
+		/>
 	{/if}
 
 	{#snippet footer()}
@@ -188,18 +152,24 @@
 					Confirmar otro canje
 				</Button>
 				<Button onclick={handleClose} class="w-full sm:w-auto">Listo</Button>
-			{:else}
+			{:else if consulta}
 				<Button
 					variant="outline"
-					onclick={handleClose}
+					onclick={searchAgain}
 					disabled={isLoading}
 					class="w-full sm:w-auto"
 				>
-					Cancelar
+					Buscar otro código
 				</Button>
-				<Button type="submit" form={FORM_ID} loading={isLoading} class="w-full sm:w-auto">
-					Confirmar canje
-				</Button>
+				{#if canRedeem}
+					<Button onclick={handleRedeem} loading={isLoading} class="w-full sm:w-auto">
+						Confirmar canje
+					</Button>
+				{:else}
+					<Button onclick={handleClose} class="w-full sm:w-auto">Cerrar</Button>
+				{/if}
+			{:else}
+				<Button variant="outline" onclick={handleClose} class="w-full sm:w-auto">Cerrar</Button>
 			{/if}
 		</div>
 	{/snippet}

@@ -10,3 +10,5 @@ export * from './canje.service';
 export * from './administrador.service';
 export * from './operacion.service';
 export * from './resumen.service';
+export * from './perfil.service';
+export * from './movimiento.service';

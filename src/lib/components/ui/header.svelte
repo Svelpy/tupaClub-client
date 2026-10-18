@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { asset, resolve } from '$app/paths';
-	import { ChevronDownIcon, LogOutIcon, Menu2Icon } from '#lib/icons/outline/index.ts';
+	import { ChevronDownIcon, LogOutIcon, Menu2Icon, UserIcon } from '#lib/icons/outline/index.ts';
 	import type { DropdownOption } from '#lib/interfaces/index.ts';
-	import { authStore, currentUserStore } from '#lib/stores/index.ts';
+	import { authStore, currentRole, currentUserStore } from '#lib/stores/index.ts';
+	import { canAccessRoute } from '#lib/utils/index.ts';
 	import DropdownMenu from './dropdownMenu.svelte';
 
 	interface Props {
@@ -37,9 +38,20 @@
 		await goto(resolve('/auth/sign-in'), { replaceState: true });
 	}
 
-	const userMenuOptions: DropdownOption[] = [
+	// "Mi perfil" solo para los roles que pueden abrirlo (SUPERADMIN no tiene perfil)
+	const userMenuOptions = $derived<DropdownOption[]>([
+		...(canAccessRoute($currentRole, '/panel/perfil')
+			? [
+					{
+						id: 'perfil',
+						label: 'Mi perfil',
+						icon: UserIcon,
+						action: () => goto(resolve('/panel/perfil'))
+					}
+				]
+			: []),
 		{ id: 'logout', label: 'Cerrar sesión', icon: LogOutIcon, action: logout }
-	];
+	]);
 </script>
 
 <header

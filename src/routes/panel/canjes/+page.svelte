@@ -3,6 +3,7 @@
 	import { MainLayout } from '#lib/components/layout/index.ts';
 	import { Button, PageHeader } from '#lib/components/ui/index.ts';
 	import {
+		CanjeCancelCodigoModal,
 		CanjeCancelModal,
 		CanjeList,
 		CanjeRedeemModal,
@@ -12,10 +13,9 @@
 	import { SucursalFilter } from '#lib/components/features/panel/sucursales/index.ts';
 	import { Action, Module } from '#lib/config/index.ts';
 	import { PAGINATION } from '#lib/constants/index.ts';
-	import { StopwatchIcon, TicketIcon } from '#lib/icons/outline/index.ts';
+	import { StopwatchIcon, TicketIcon, XIcon } from '#lib/icons/outline/index.ts';
 	import type {
 		Canje,
-		CanjeDetail,
 		CanjeListItem,
 		CanjeStatus,
 		NegocioListItem
@@ -46,6 +46,7 @@
 	let optionsError = $state('');
 
 	let isRedeemOpen = $state(false);
+	let isCancelCodigoOpen = $state(false);
 	let cancellingCanje = $state<CanjeListItem | null>(null);
 	let isExpiring = $state(false);
 
@@ -106,38 +107,8 @@
 		loadCanjes(PAGINATION.DEFAULT_PAGE);
 	}
 
-	function toCanje({
-		id,
-		cliente_id,
-		vale_id,
-		config_punto_id,
-		codigo_canje,
-		referencia,
-		status,
-		total_costo,
-		total_puntos,
-		expires_at,
-		created_at,
-		updated_at
-	}: CanjeDetail): Canje {
-		return {
-			id,
-			cliente_id,
-			vale_id,
-			config_punto_id,
-			codigo_canje,
-			referencia,
-			status,
-			total_costo,
-			total_puntos,
-			expires_at,
-			created_at,
-			updated_at
-		};
-	}
-
 	// Tras confirmar o cancelar se actualiza la lista localmente para no volver a pedirla
-	function handleCanjeUpdated(updated: CanjeDetail) {
+	function handleCanjeUpdated(updated: Canje) {
 		const isListed = canjes.some(({ canje }) => canje.id === updated.id);
 
 		if (!isListed) {
@@ -158,7 +129,7 @@
 		}
 
 		canjes = canjes.map((item) =>
-			item.canje.id === updated.id ? { ...item, canje: toCanje(updated) } : item
+			item.canje.id === updated.id ? { ...item, canje: updated } : item
 		);
 	}
 
@@ -195,6 +166,11 @@
 	<Button variant="outline" onclick={handleExpire} loading={isExpiring} class="w-full sm:w-auto">
 		{#snippet leftIcon()}<StopwatchIcon class="size-5" />{/snippet}
 		Expirar vencidos
+	</Button>
+	<!-- Separado de confirmar: cada flujo busca el canje por código y hace una sola acción -->
+	<Button variant="outline" onclick={() => (isCancelCodigoOpen = true)} class="w-full sm:w-auto">
+		{#snippet leftIcon()}<XIcon class="size-5" />{/snippet}
+		Cancelar canje
 	</Button>
 	<Button onclick={() => (isRedeemOpen = true)} class="w-full sm:w-auto">
 		{#snippet leftIcon()}<TicketIcon class="size-5" />{/snippet}
@@ -248,6 +224,12 @@
 		isOpen={isRedeemOpen}
 		onClose={() => (isRedeemOpen = false)}
 		onRedeemed={handleCanjeUpdated}
+	/>
+
+	<CanjeCancelCodigoModal
+		isOpen={isCancelCodigoOpen}
+		onClose={() => (isCancelCodigoOpen = false)}
+		onCancelled={handleCanjeUpdated}
 	/>
 
 	<CanjeCancelModal

@@ -14,3 +14,6 @@ export { default as ValeDetailPageSkeleton } from './valeDetailPageSkeleton.svel
 export { default as ValeDetailSkeleton } from './valeDetailSkeleton.svelte';
 export { default as ValeGridSkeleton } from './valeGridSkeleton.svelte';
 export { default as ValeListSkeleton } from './valeListSkeleton.svelte';
+export { default as PerfilSkeleton } from './perfilSkeleton.svelte';
+export { default as MovimientoListSkeleton } from './movimientoListSkeleton.svelte';
+export { default as MiMovimientoListSkeleton } from './miMovimientoListSkeleton.svelte';

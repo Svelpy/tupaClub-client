@@ -2,7 +2,7 @@
 	import { ValeImage } from '#lib/components/features/panel/vales/index.ts';
 	import { Button, Modal } from '#lib/components/ui/index.ts';
 	import { AlertTriangleIcon } from '#lib/icons/outline/index.ts';
-	import type { CanjeDetail, CanjeListItem } from '#lib/interfaces/index.ts';
+	import type { Canje, CanjeListItem } from '#lib/interfaces/index.ts';
 	import { canjeService, errorService } from '#lib/services/index.ts';
 	import { alert, formatCurrency, formatDateTime, formatNumber } from '#lib/utils/index.ts';
 
@@ -10,7 +10,7 @@
 		/** Canje a cancelar; null = modal cerrado */
 		item: CanjeListItem | null;
 		onClose: () => void;
-		onCancelled: (canje: CanjeDetail) => void;
+		onCancelled: (canje: Canje) => void;
 	}
 
 	let { item, onClose, onCancelled }: Props = $props();

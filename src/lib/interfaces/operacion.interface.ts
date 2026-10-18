@@ -1,5 +1,5 @@
-import type { UserRole } from './auth.interface';
-import type { CreateClienteRequest } from './cliente.interface';
+import type { Administrador } from './administrador.interface';
+import type { Cliente, CreateClienteRequest } from './cliente.interface';
 import type { PaginatedResponse, PaginationParams } from './pagination.interface';
 import type { Sucursal } from './sucursal.interface';
 
@@ -21,23 +21,14 @@ export interface Operacion {
 	updated_at: string | null;
 }
 
-/** Cliente que recibió los puntos, tal como viene en el listado */
-export interface OperacionCliente {
-	id: string;
-	nombre: string;
-	apellidos: string | null;
-}
-
-/** Usuario del panel que registró la compra, tal como viene en el listado */
-export interface OperacionEmisor extends OperacionCliente {
-	role: UserRole;
-}
-
 /** Item del listado: la operación junto a quién la registró, el cliente y la sucursal */
-export interface OperacionListItem extends Operacion {
-	emisor: OperacionEmisor;
-	receptor: OperacionCliente;
-	sucursal: Pick<Sucursal, 'id' | 'nombre'> | null;
+export interface OperacionListItem {
+	operacion: Operacion;
+	/** Usuario del panel que registró la compra */
+	emisor: Administrador;
+	/** Cliente que recibió los puntos */
+	receptor: Cliente;
+	sucursal: Sucursal | null;
 }
 
 export interface OperacionListParams extends PaginationParams {

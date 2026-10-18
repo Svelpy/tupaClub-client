@@ -26,7 +26,7 @@
 	style="--notch: calc(100% - 5.25rem); mask: radial-gradient(circle 0.5rem at 0 var(--notch), #0000 0.5rem, #000 calc(0.5rem + 0.5px)) left / 51% 100% no-repeat, radial-gradient(circle 0.5rem at 100% var(--notch), #0000 0.5rem, #000 calc(0.5rem + 0.5px)) right / 51% 100% no-repeat;"
 >
 	<div
-		class="flex aspect-4/3 w-full items-center justify-center overflow-hidden rounded-t-2xl bg-light-one_d text-light-three dark:bg-dark-one_d dark:text-dark-three"
+		class="flex w-full items-center justify-center overflow-hidden rounded-t-2xl bg-light-one_d text-light-three dark:bg-dark-one_d dark:text-dark-three"
 	>
 		{#if vale.image_url}
 			<Image

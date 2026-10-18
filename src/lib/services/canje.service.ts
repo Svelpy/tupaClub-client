@@ -1,13 +1,14 @@
 import { apiFidelityTupa } from '#lib/config/index.ts';
 import type {
+	Canje,
+	CanjeConsulta,
 	CanjeDetail,
 	CanjeListParams,
 	CanjeListResponse,
 	CreateCanjeRequest,
 	ExpireCanjesResponse,
 	MiCanjeListParams,
-	MiCanjeListResponse,
-	RedeemCanjeRequest
+	MiCanjeListResponse
 } from '#lib/interfaces/index.ts';
 import { buildPaginationQuery } from '#lib/utils/pagination.ts';
 
@@ -41,18 +42,30 @@ class CanjeService {
 		return apiFidelityTupa.post<CanjeDetail>('/canjes/', data, { requireAuth: true });
 	}
 
-	/** Confirma el canje pendiente que corresponde al código que presenta el cliente */
-	async redeem(data: RedeemCanjeRequest): Promise<CanjeDetail> {
-		return apiFidelityTupa.post<CanjeDetail>('/canjes/redeem', data, { requireAuth: true });
+	/**
+	 * Canje que corresponde al código que presenta el cliente, en cualquier estado. Se consulta antes
+	 * de confirmarlo o cancelarlo para ver si sigue pendiente. Responde 404 si el código no existe.
+	 */
+	async getByCodigo(codigo: string): Promise<CanjeConsulta> {
+		return apiFidelityTupa.get<CanjeConsulta>(`/canjes/codigo/${encodeURIComponent(codigo)}`, {
+			requireAuth: true
+		});
 	}
 
-	/** Solo se pueden cancelar canjes PENDIENTE */
-	async cancel(id: string): Promise<CanjeDetail> {
-		return apiFidelityTupa.post<CanjeDetail>(
-			`/canjes/${encodeURIComponent(id)}/cancel`,
+	/** Confirma un canje PENDIENTE: el cliente se lleva el vale */
+	async redeem(id: string): Promise<CanjeConsulta> {
+		return apiFidelityTupa.post<CanjeConsulta>(
+			`/canjes/${encodeURIComponent(id)}/redeem`,
 			undefined,
 			{ requireAuth: true }
 		);
+	}
+
+	/** Solo se pueden cancelar canjes PENDIENTE */
+	async cancel(id: string): Promise<Canje> {
+		return apiFidelityTupa.post<Canje>(`/canjes/${encodeURIComponent(id)}/cancel`, undefined, {
+			requireAuth: true
+		});
 	}
 
 	/** Pasa a EXPIRADO todos los canjes pendientes cuyo expires_at ya pasó */

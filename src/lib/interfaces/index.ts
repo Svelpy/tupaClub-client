@@ -14,3 +14,5 @@ export * from './canje.interface';
 export * from './administrador.interface';
 export * from './operacion.interface';
 export * from './resumen.interface';
+export * from './perfil.interface';
+export * from './movimiento.interface';

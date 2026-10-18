@@ -1,7 +1,10 @@
 export { default as CanjeActions } from './canjeActions.svelte';
+export { default as CanjeBuscarCodigo } from './canjeBuscarCodigo.svelte';
+export { default as CanjeCancelCodigoModal } from './canjeCancelCodigoModal.svelte';
 export { default as CanjeCancelModal } from './canjeCancelModal.svelte';
 export { default as CanjeCard } from './canjeCard.svelte';
 export { default as CanjeCodigo } from './canjeCodigo.svelte';
+export { default as CanjeConsultaCard } from './canjeConsultaCard.svelte';
 export { default as CanjeEstadoDetalle } from './canjeEstadoDetalle.svelte';
 export { default as CanjeList } from './canjeList.svelte';
 export { default as CanjeRedeemModal } from './canjeRedeemModal.svelte';

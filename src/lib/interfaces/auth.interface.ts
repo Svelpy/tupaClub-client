@@ -54,22 +54,28 @@ export interface AuthTokens {
 export type UserRole = Role | (string & {});
 export type UserGenero = 'M' | 'F' | 'O' | (string & {});
 
+/** Usuario de la sesión (`/users/me`); también es la respuesta de editar el perfil */
 export interface User {
 	id: string;
+	/** Cédula de identidad */
 	ci: string;
 	nombre: string;
-	apellidos: string;
-	email: string;
-	telefono: string;
-	direccion: string;
-	birth_date: string;
-	genero: UserGenero;
+	apellidos: string | null;
+	email: string | null;
+	telefono: string | null;
+	direccion: string | null;
+	/** Formato YYYY-MM-DD */
+	birth_date: string | null;
+	genero: UserGenero | null;
 	avatar_url: string | null;
 	puntos: number;
 	role: UserRole;
 	sucursal_id: string | null;
+	created_at: string;
+	updated_at: string | null;
 }
 
+/** Respuesta de `/users/me`. Un CLIENTE no tiene negocio ni sucursal (llegan en null) */
 export interface CurrentUser {
 	user: User;
 	negocio: Negocio | null;

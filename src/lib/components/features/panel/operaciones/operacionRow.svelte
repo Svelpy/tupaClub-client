@@ -13,12 +13,12 @@
 	import OperacionActions from './operacionActions.svelte';
 
 	interface Props {
-		operacion: OperacionListItem;
-		onFilterReceptor?: (operacion: OperacionListItem) => void;
-		onFilterEmisor?: (operacion: OperacionListItem) => void;
+		item: OperacionListItem;
+		onFilterReceptor?: (item: OperacionListItem) => void;
+		onFilterEmisor?: (item: OperacionListItem) => void;
 	}
 
-	let { operacion, onFilterReceptor, onFilterEmisor }: Props = $props();
+	let { item, onFilterReceptor, onFilterEmisor }: Props = $props();
 
 	// Sin ninguna acción disponible no se muestra la celda
 	const hasActions = $derived(!!onFilterReceptor || !!onFilterEmisor);
@@ -29,43 +29,43 @@
 >
 	<TableCell class="px-4 py-3">
 		<div class="flex min-w-0 items-center gap-3">
-			<!-- El listado no trae la foto del cliente: se muestran sus iniciales -->
-			<ClienteAvatar cliente={{ ...operacion.receptor, avatar_url: null }} />
+			<!-- Se muestran las iniciales del cliente, no su foto -->
+			<ClienteAvatar cliente={{ ...item.receptor, avatar_url: null }} />
 			<div class="min-w-0">
 				<p class="truncate font-medium text-light-two dark:text-dark-two">
-					{formatFullName(operacion.receptor)}
+					{formatFullName(item.receptor)}
 				</p>
 				<p class="truncate text-xs text-light-two_d dark:text-dark-two_d">
-					{formatValue(operacion.referencia)}
+					{formatValue(item.operacion.referencia)}
 				</p>
 			</div>
 		</div>
 	</TableCell>
 	<TableCell class="px-4 py-3 text-right whitespace-nowrap">
 		<p class="font-semibold text-light-three tabular-nums dark:text-dark-three">
-			+{formatNumber(operacion.total_puntos)} pts
+			+{formatNumber(item.operacion.total_puntos)} pts
 		</p>
 		<p class="text-xs text-light-two_d tabular-nums dark:text-dark-two_d">
-			{formatCurrency(operacion.total_compra)}
+			{formatCurrency(item.operacion.total_compra)}
 		</p>
 	</TableCell>
 	<TableCell class="hidden px-4 py-3 text-sm lg:table-cell">
 		<p class="truncate text-light-two dark:text-dark-two">
-			{formatValue(operacion.sucursal?.nombre)}
+			{formatValue(item.sucursal?.nombre)}
 		</p>
 	</TableCell>
 	<TableCell class="hidden px-4 py-3 text-sm xl:table-cell">
-		<p class="truncate text-light-two dark:text-dark-two">{formatFullName(operacion.emisor)}</p>
+		<p class="truncate text-light-two dark:text-dark-two">{formatFullName(item.emisor)}</p>
 		<p class="truncate text-xs text-light-two_d dark:text-dark-two_d">
-			{formatRole(operacion.emisor.role)}
+			{formatRole(item.emisor.role)}
 		</p>
 	</TableCell>
 	<TableCell class="px-4 py-3 text-sm text-light-two_d dark:text-dark-two_d">
-		{formatDateTime(operacion.created_at)}
+		{formatDateTime(item.operacion.created_at)}
 	</TableCell>
 	{#if hasActions}
 		<TableCell class="px-2 py-3 text-right">
-			<OperacionActions {operacion} {onFilterReceptor} {onFilterEmisor} />
+			<OperacionActions {item} {onFilterReceptor} {onFilterEmisor} />
 		</TableCell>
 	{/if}
 </TableRow>

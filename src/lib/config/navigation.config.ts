@@ -12,6 +12,8 @@ import {
 	SparklesIcon,
 	TagIcon,
 	TicketIcon,
+	TredingUpIcon,
+	UserIcon,
 	UsersIcon
 } from '#lib/icons/outline/index.ts';
 import type { ClientNavItem, NavItem, NavSection } from '#lib/interfaces/index.ts';
@@ -92,6 +94,12 @@ export const PANEL_NAVIGATION: NavSection[] = [
 				icon: ArrowsLeftRightIcon
 			}),
 			navItem({
+				id: 'movimientos',
+				label: 'Movimientos',
+				route: '/panel/movimientos',
+				icon: TredingUpIcon
+			}),
+			navItem({
 				id: 'configuracion-puntos',
 				label: 'Configuración de puntos',
 				route: '/panel/configuracion-puntos',
@@ -126,5 +134,10 @@ export const PANEL_NAVIGATION: NavSection[] = [
 				icon: ShieldIcon
 			})
 		]
+	},
+	{
+		id: 'cuenta',
+		label: 'Cuenta',
+		items: [navItem({ id: 'perfil', label: 'Mi perfil', route: '/panel/perfil', icon: UserIcon })]
 	}
 ];

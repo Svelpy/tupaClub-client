@@ -1,12 +1,6 @@
 <script lang="ts">
 	import type { Canje } from '#lib/interfaces/index.ts';
-	import {
-		cn,
-		formatDate,
-		formatDateTime,
-		formatRelativeTime,
-		isCanjeVencido
-	} from '#lib/utils/index.ts';
+	import { cn, formatDateTime, formatRelativeTime, isCanjeVencido } from '#lib/utils/index.ts';
 
 	interface Props {
 		canje: Canje;
@@ -32,19 +26,19 @@
 				return { text: `Vence ${relative}`, date: canje.expires_at, urgent: expiresIn < DAY_MS };
 			case 'EXPIRADO':
 				return {
-					text: `Expiró el ${formatDate(canje.expires_at)}`,
+					text: `Expiró el ${formatDateTime(canje.expires_at)}`,
 					date: canje.expires_at,
 					urgent: false
 				};
 			case 'CANJEADO':
 				return {
-					text: `Canjeado el ${formatDate(canje.updated_at)}`,
+					text: `Canjeado el ${formatDateTime(canje.updated_at)}`,
 					date: canje.updated_at,
 					urgent: false
 				};
 			case 'CANCELADO':
 				return {
-					text: `Cancelado el ${formatDate(canje.updated_at)}`,
+					text: `Cancelado el ${formatDateTime(canje.updated_at)}`,
 					date: canje.updated_at,
 					urgent: false
 				};

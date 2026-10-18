@@ -68,9 +68,12 @@ export function canAccessRoute(role: Role | null, routeId: string | null): boole
 	if (!access) return false;
 
 	const id = stripRouteGroups(routeId);
+	// Por segmentos: '/panel/canjes' cubre '/panel/canjes/[id]' pero no '/panel/canjes-x'
+	const covers = (route: string) => id === route || id.startsWith(`${route}/`);
+
+	if (access.excludedRoutes?.some(covers)) return false;
 	if (access.exactRoutes?.includes(id as RouteId)) return true;
-	// Por segmentos: '/panel/canjes' habilita '/panel/canjes/[id]' pero no '/panel/canjes-x'
-	return access.routes.some((route) => id === route || id.startsWith(`${route}/`));
+	return access.routes.some(covers);
 }
 
 /** Página de inicio del rol */

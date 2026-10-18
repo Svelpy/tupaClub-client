@@ -2,10 +2,10 @@
 	import { asset, resolve } from '$app/paths';
 	import { MainLayout } from '#lib/components/layout/index.ts';
 	import { Button } from '#lib/components/ui/index.ts';
-	import { APP_SITE_CONFIG, NIVEL_CLIENTE_LABEL } from '#lib/constants/index.ts';
+	import { APP_SITE_CONFIG } from '#lib/constants/index.ts';
 	import { NivelIcon } from '#lib/icons/niveles/index.ts';
 	import { GiftIcon, ShoppingCartIcon, SparklesIcon } from '#lib/icons/outline/index.ts';
-	import type { NivelCliente } from '#lib/interfaces/index.ts';
+	//import type { NivelCliente } from '#lib/interfaces/index.ts';
 
 	const pasos = [
 		{
@@ -21,7 +21,7 @@
 		}
 	];
 
-	const niveles: NivelCliente[] = ['BRONCE', 'PLATA', 'ORO', 'DIAMANTE'];
+	//const niveles: NivelCliente[] = ['BRONCE', 'PLATA', 'ORO', 'DIAMANTE'];
 </script>
 
 <MainLayout

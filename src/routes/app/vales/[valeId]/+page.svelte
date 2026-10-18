@@ -141,10 +141,10 @@
 			<!-- Imagen: fija al costado en escritorio mientras se lee el detalle -->
 			<div class="md:sticky md:top-24 md:self-start">
 				<div
-					class="flex aspect-4/3 items-center justify-center overflow-hidden rounded-3xl bg-light-one_d text-light-three dark:bg-dark-one_d dark:text-dark-three"
+					class="flex items-center justify-center overflow-hidden rounded-3xl bg-light-one_d text-light-three dark:bg-dark-one_d dark:text-dark-three"
 				>
 					{#if vale.image_url}
-						<Image src={vale.image_url} alt="Imagen de {vale.nombre}" />
+						<Image objectFit="fill" src={vale.image_url} alt="Imagen de {vale.nombre}" />
 					{:else}
 						<TicketIcon class="size-20 opacity-60" />
 					{/if}

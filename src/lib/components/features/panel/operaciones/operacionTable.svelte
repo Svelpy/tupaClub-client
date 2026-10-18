@@ -5,8 +5,8 @@
 
 	interface Props {
 		operaciones: OperacionListItem[];
-		onFilterReceptor?: (operacion: OperacionListItem) => void;
-		onFilterEmisor?: (operacion: OperacionListItem) => void;
+		onFilterReceptor?: (item: OperacionListItem) => void;
+		onFilterEmisor?: (item: OperacionListItem) => void;
 	}
 
 	let { operaciones, onFilterReceptor, onFilterEmisor }: Props = $props();
@@ -34,8 +34,8 @@
 			</TableRow>
 		</TableHeader>
 		<TableBody>
-			{#each operaciones as operacion (operacion.id)}
-				<OperacionRow {operacion} {onFilterReceptor} {onFilterEmisor} />
+			{#each operaciones as item (item.operacion.id)}
+				<OperacionRow {item} {onFilterReceptor} {onFilterEmisor} />
 			{/each}
 		</TableBody>
 	</Table>

@@ -1,5 +1,5 @@
 import { writable, derived, get } from 'svelte/store';
-import type { LoginCredentials, CurrentUser } from '#lib/interfaces/index.ts';
+import type { LoginCredentials, CurrentUser, User } from '#lib/interfaces/index.ts';
 import { AppError, authService } from '#lib/services/index.ts';
 import { isRole } from '#lib/utils/rbac.utils.ts';
 
@@ -91,6 +91,13 @@ export const authStore = {
 	setUser: (userData: CurrentUser) => {
 		currentUserStore.set(userData);
 		authService.setCurrentUser(userData);
+	},
+
+	/** Reemplaza los datos del usuario de la sesión (p. ej. tras editar su perfil o su avatar) */
+	setUserData: (user: User) => {
+		const current = get(currentUserStore);
+		if (!current) return;
+		authStore.setUser({ ...current, user });
 	},
 
 	/** Actualiza el saldo de puntos de la sesión (p. ej. tras un canje o al cargar el resumen) */

@@ -11,3 +11,4 @@ export * from './pagination';
 export * from './canje';
 export * from './puntos';
 export * from './maps';
+export * from './movimiento';

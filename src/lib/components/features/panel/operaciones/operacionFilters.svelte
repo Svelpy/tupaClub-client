@@ -1,11 +1,7 @@
 <script lang="ts">
 	import { SucursalFilter } from '#lib/components/features/panel/sucursales/index.ts';
 	import { XIcon } from '#lib/icons/outline/index.ts';
-	import type {
-		NegocioListItem,
-		OperacionCliente,
-		OperacionEmisor
-	} from '#lib/interfaces/index.ts';
+	import type { Administrador, Cliente, NegocioListItem } from '#lib/interfaces/index.ts';
 	import { formatFullName } from '#lib/utils/index.ts';
 
 	interface Props {
@@ -14,9 +10,9 @@
 		/** null = todas las sucursales */
 		sucursalId: string | null;
 		/** Cliente elegido desde una operación; null = todos */
-		receptor: OperacionCliente | null;
+		receptor: Cliente | null;
 		/** Usuario del panel elegido desde una operación; null = todos */
-		emisor: OperacionEmisor | null;
+		emisor: Administrador | null;
 		isLoadingOptions?: boolean;
 		optionsError?: string;
 		disabled?: boolean;

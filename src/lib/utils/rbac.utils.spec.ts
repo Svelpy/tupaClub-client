@@ -22,13 +22,15 @@ const PANEL_ROUTES = [
 	'/panel/registrar-compra',
 	'/panel/canjes',
 	'/panel/operaciones',
+	'/panel/movimientos',
 	'/panel/configuracion-puntos',
 	'/panel/vales',
 	'/panel/categorias',
 	'/panel/clientes',
 	'/panel/mis-sucursales',
 	'/panel/negocios',
-	'/panel/administradores'
+	'/panel/administradores',
+	'/panel/perfil'
 ];
 
 const CAJERO_ROUTES = [
@@ -37,8 +39,10 @@ const CAJERO_ROUTES = [
 	'/panel/categorias',
 	'/panel/vales',
 	'/panel/operaciones',
+	'/panel/movimientos',
 	'/panel/canjes',
-	'/panel/configuracion-puntos'
+	'/panel/configuracion-puntos',
+	'/panel/perfil'
 ];
 
 describe('isRole', () => {
@@ -54,9 +58,27 @@ describe('canAccessRoute', () => {
 		expect(canAccessRoute(role, getHomeRoute(role))).toBe(true);
 	});
 
-	it.each(ADMINS)('%s accede a todo /panel pero no a /app', (role) => {
-		for (const route of PANEL_ROUTES) expect(canAccessRoute(role, route)).toBe(true);
+	it.each(ADMINS)('%s accede a todo /panel (salvo exclusiones) pero no a /app', (role) => {
+		for (const route of PANEL_ROUTES) {
+			expect(canAccessRoute(role, route)).toBe(
+				!(role === Role.SUPERADMIN && route === '/panel/perfil')
+			);
+		}
 		expect(canAccessRoute(role, '/app')).toBe(false);
+	});
+
+	it('todos los roles abren su perfil salvo SUPERADMIN', () => {
+		for (const role of [Role.OWNER, Role.ADMIN, Role.CAJERO, Role.SOCIO]) {
+			expect(canAccessRoute(role, '/panel/perfil')).toBe(true);
+		}
+		expect(canAccessRoute(Role.CLIENTE, '/app/perfil')).toBe(true);
+		expect(canAccessRoute(Role.SUPERADMIN, '/panel/perfil')).toBe(false);
+	});
+
+	it('una ruta excluida deniega también sus subrutas', () => {
+		expect(canAccessRoute(Role.SUPERADMIN, '/panel/perfil/[id]')).toBe(false);
+		expect(canAccessRoute(Role.SUPERADMIN, '/(staff)/panel/perfil')).toBe(false);
+		expect(canAccessRoute(Role.SUPERADMIN, '/panel/perfiles')).toBe(true);
 	});
 
 	it('CAJERO accede solo a sus páginas del panel', () => {
@@ -73,9 +95,11 @@ describe('canAccessRoute', () => {
 		expect(canAccessRoute(Role.CAJERO, '/panel/clientes')).toBe(false);
 	});
 
-	it('SOCIO accede solo a /panel/canjes', () => {
+	it('SOCIO accede solo a /panel/canjes y a su perfil', () => {
 		for (const route of PANEL_ROUTES) {
-			expect(canAccessRoute(Role.SOCIO, route)).toBe(route === '/panel/canjes');
+			expect(canAccessRoute(Role.SOCIO, route)).toBe(
+				route === '/panel/canjes' || route === '/panel/perfil'
+			);
 		}
 	});
 

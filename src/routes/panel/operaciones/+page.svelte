@@ -11,9 +11,9 @@
 	import { PAGINATION } from '#lib/constants/index.ts';
 	import { ShoppingCartIcon } from '#lib/icons/outline/index.ts';
 	import type {
+		Administrador,
+		Cliente,
 		NegocioListItem,
-		OperacionCliente,
-		OperacionEmisor,
 		OperacionListItem
 	} from '#lib/interfaces/index.ts';
 	import { errorService, negocioService, operacionService } from '#lib/services/index.ts';
@@ -30,8 +30,8 @@
 	let total = $state(0);
 	let sucursalId = $state<string | null>(null);
 	// Se eligen desde una operación del listado; se guarda la persona para mostrar su nombre
-	let receptor = $state<OperacionCliente | null>(null);
-	let emisor = $state<OperacionEmisor | null>(null);
+	let receptor = $state<Cliente | null>(null);
+	let emisor = $state<Administrador | null>(null);
 	let isLoading = $state(false);
 	let loadError = $state('');
 
@@ -91,8 +91,8 @@
 
 	function applyFilters(next: {
 		sucursalId?: string | null;
-		receptor?: OperacionCliente | null;
-		emisor?: OperacionEmisor | null;
+		receptor?: Cliente | null;
+		emisor?: Administrador | null;
 	}) {
 		if (next.sucursalId !== undefined) sucursalId = next.sucursalId;
 		if (next.receptor !== undefined) receptor = next.receptor;

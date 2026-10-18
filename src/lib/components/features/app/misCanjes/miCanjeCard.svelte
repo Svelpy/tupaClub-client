@@ -6,7 +6,7 @@
 	import { Image, QrCode } from '#lib/components/ui/index.ts';
 	import { TicketIcon } from '#lib/icons/outline/index.ts';
 	import type { MiCanjeListItem } from '#lib/interfaces/index.ts';
-	import { cn, formatCodigoCanje, formatDate, getCanjeStatus } from '#lib/utils/index.ts';
+	import { cn, formatCodigoCanje, formatDateTime, getCanjeStatus } from '#lib/utils/index.ts';
 
 	interface Props {
 		item: MiCanjeListItem;
@@ -32,10 +32,10 @@
 	<div class="min-w-0 flex-1">
 		<!-- El vale de este listado no trae imagen: se muestra la del negocio -->
 		<div
-			class="flex aspect-4/3 w-full items-center justify-center overflow-hidden rounded-xl bg-light-one_d text-light-three dark:bg-dark-one_d dark:text-dark-three"
+			class="flex w-full items-center justify-center overflow-hidden rounded-xl bg-light-one_d text-light-three dark:bg-dark-one_d dark:text-dark-three"
 		>
-			{#if item.negocio.image_url}
-				<Image src={item.negocio.image_url} alt="" />
+			{#if item.vale.image_url}
+				<Image objectFit="contain" src={item.vale.image_url} alt="" />
 			{:else}
 				<TicketIcon class="size-10" />
 			{/if}
@@ -48,7 +48,7 @@
 			{item.vale.nombre}
 		</h3>
 		<p class="mt-1.5 text-xs text-light-two_d dark:text-dark-two_d">
-			Solicitado el {formatDate(canje.created_at)}
+			Solicitado el {formatDateTime(canje.created_at)}
 		</p>
 		<CanjeEstadoDetalle {canje} {now} class="block" />
 	</div>

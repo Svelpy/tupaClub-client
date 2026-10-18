@@ -3,7 +3,8 @@ import { z } from 'zod';
 /** Dígitos del código que el cliente presenta (p. ej. "00123456") */
 export const CANJE_CODIGO_LENGTH = 8;
 
-export const redeemCanjeSchema = z.object({
+/** Código con el que se consulta un canje antes de confirmarlo o cancelarlo */
+export const codigoCanjeSchema = z.object({
 	codigo_canje: z
 		.string()
 		.trim()
@@ -14,4 +15,4 @@ export const redeemCanjeSchema = z.object({
 		})
 });
 
-export type RedeemCanjeInput = z.input<typeof redeemCanjeSchema>;
+export type CodigoCanjeInput = z.input<typeof codigoCanjeSchema>;

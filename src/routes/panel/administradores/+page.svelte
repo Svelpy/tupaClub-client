@@ -241,15 +241,9 @@
 				/>
 			{/snippet}
 
-			{#if !canManage && (canUpdate || canDelete)}
-				<p
-					role="note"
-					class="mt-4 rounded-xl border border-light-three/15 bg-light-three/10 p-3 text-sm text-light-two dark:border-dark-three/15 dark:bg-dark-three/10 dark:text-dark-two"
-				>
-					Puedes ver a los {roleLabel.toLowerCase()}, pero no editarlos, restablecer su contraseña
-					ni eliminarlos: solo se gestionan usuarios con un rol inferior al tuyo.
-				</p>
-			{/if}
+			<!-- {#if !canManage && (canUpdate || canDelete)}
+
+			{/if} -->
 
 			<AdministradorList
 				{administradores}
