@@ -7,6 +7,10 @@
 		<meta name="theme-color" content="#ffffff" />
 		<meta name="text-scale" content="scale" />
 		<link rel="icon" href="/images/logo_app.webp" />
+		<!-- PWA: instalable en el teléfono. iOS usa su propio ícono y nombre -->
+		<link rel="manifest" href="/manifest.webmanifest" />
+		<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+		<meta name="apple-mobile-web-app-title" content="TUPA CLUB" />
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
