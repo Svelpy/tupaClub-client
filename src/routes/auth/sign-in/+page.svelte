@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { Button, Heading } from '#lib/components/ui/index.ts';
+	import { LegalLinks } from '#lib/components/features/legal/index.ts';
 	import {
 		AlertTriangleIcon,
 		EyeIcon,
@@ -205,6 +206,8 @@
 					Regístrate
 				</a>
 			</p>
+
+			<LegalLinks class="mt-6" />
 		</form>
 	</section>
 </MainLayout>

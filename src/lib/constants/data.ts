@@ -74,3 +74,13 @@ export const CANJE_VIGENCIA_DIAS = 30;
 
 /** Referencia que se guarda en los canjes solicitados desde el área de clientes */
 export const CANJE_REFERENCIA_APP = 'Solicitud desde la aplicación';
+
+/** Edad mínima para registrarse en el programa (Términos y condiciones, punto 2) */
+export const EDAD_MINIMA_REGISTRO = 18;
+
+/** Páginas legales públicas: se enlazan desde la landing, el login, el registro y entre sí */
+export const LEGAL_PAGES = [
+	{ href: '/(legal)/terminos', label: 'Términos y condiciones' },
+	{ href: '/(legal)/privacidad', label: 'Política de privacidad' },
+	{ href: '/(legal)/cookies', label: 'Política de cookies' }
+] as const;

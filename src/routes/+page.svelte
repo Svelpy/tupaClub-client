@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { asset, resolve } from '$app/paths';
 	import { InstallAppButton } from '#lib/components/features/landing/index.ts';
+	import { LegalLinks } from '#lib/components/features/legal/index.ts';
 	import { MainLayout } from '#lib/components/layout/index.ts';
 	import { Button } from '#lib/components/ui/index.ts';
 	import { APP_SITE_CONFIG } from '#lib/constants/index.ts';
@@ -177,9 +178,9 @@
 	</main>
 
 	<footer
-		class="border-t border-light-one_d py-6 text-center text-sm text-light-two_d dark:border-dark-one_d dark:text-dark-two_d"
+		class="space-y-3 border-t border-light-one_d py-6 text-center text-sm text-light-two_d dark:border-dark-one_d dark:text-dark-two_d"
 	>
-		© {new Date().getFullYear()}
-		{APP_SITE_CONFIG.APP_NAME}
+		<LegalLinks />
+		<p>© {new Date().getFullYear()} {APP_SITE_CONFIG.APP_NAME}</p>
 	</footer>
 </MainLayout>
