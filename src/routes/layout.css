@@ -2,6 +2,19 @@
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
+/* Inter (Google Fonts) servida desde la app para que funcione offline. Solo el subconjunto latino
+   (español completo); el eje opsz ajusta las letras al tamaño del texto, como SF Pro en iPhone */
+@font-face {
+	font-family: 'Inter Variable';
+	font-style: normal;
+	font-display: swap;
+	font-weight: 100 900;
+	src: url('@fontsource-variable/inter/files/inter-latin-opsz-normal.woff2') format('woff2-variations');
+	unicode-range:
+		U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+		U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 @theme {
 	--breakpoint-*: initial;
@@ -11,10 +24,9 @@
 	--breakpoint-xl: 1280px;
 	--breakpoint-2xl: 1536px;
 
-	/* Fuente del sistema: SF Pro en iOS, Roboto en Android, Segoe UI en Windows (aspecto nativo, sin descargas) */
+	/* Inter en todos los dispositivos; mientras carga, la fuente del sistema */
 	--font-sans:
-		-apple-system, BlinkMacSystemFont, 'SF Pro Text', system-ui, 'Segoe UI', Roboto,
-		'Helvetica Neue', Arial, sans-serif;
+		'Inter Variable', -apple-system, BlinkMacSystemFont, system-ui, 'Segoe UI', Roboto, sans-serif;
 	--color-light-one: #ffffff;
 	--color-light-one_d: #eaf2ff;
 	--color-light-two: #172033;
