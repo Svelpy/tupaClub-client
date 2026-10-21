@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import { EDAD_MINIMA_REGISTRO } from '#lib/constants/data.ts';
+import { latestBirthDateForAge, todayISO } from '#lib/utils/date.ts';
+
 export const signInSchema = z.object({
 	ci: z
 		.string()
@@ -18,8 +21,6 @@ const optionalText = (max: number, label: string) =>
 		.trim()
 		.max(max, { message: `${label} no puede exceder los ${max} caracteres.` })
 		.transform((value) => value || null);
-
-const todayISO = () => new Date().toLocaleDateString('en-CA');
 
 export const signUpSchema = z.object({
 	nombre: z
@@ -57,6 +58,19 @@ export const signUpSchema = z.object({
 		.refine((value) => value === '' || value <= todayISO(), {
 			message: 'La fecha de nacimiento no puede ser futura.'
 		})
+		.refine((value) => value === '' || value <= latestBirthDateForAge(EDAD_MINIMA_REGISTRO), {
+			message: `Debes ser mayor de ${EDAD_MINIMA_REGISTRO} años para registrarte.`
+		})
 		.transform((value) => value || null),
 	direccion: optionalText(120, 'La dirección')
+});
+
+// Declaraciones del registro: se validan en el cliente y no se envían a la API
+export const signUpConsentSchema = z.object({
+	mayor_edad: z.literal(true, {
+		message: `Debes confirmar que eres mayor de ${EDAD_MINIMA_REGISTRO} años.`
+	}),
+	acepta_terminos: z.literal(true, {
+		message: 'Debes aceptar los Términos y condiciones y la Política de privacidad.'
+	})
 });

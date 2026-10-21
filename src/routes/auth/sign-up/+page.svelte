@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Component } from 'svelte';
+	import type { Component, Snippet } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { Button, Heading } from '#lib/components/ui/index.ts';
 	import {
@@ -15,12 +15,14 @@
 	} from '#lib/icons/outline/index.ts';
 	import { authService, errorService } from '#lib/services/index.ts';
 	import { MainLayout } from '#lib/components/layout/index.ts';
-	import { alert, validateSchema } from '#lib/utils/index.ts';
-	import { signUpSchema } from '#lib/zod/auth.schema.ts';
+	import { EDAD_MINIMA_REGISTRO } from '#lib/constants/index.ts';
+	import { alert, latestBirthDateForAge, validateSchema } from '#lib/utils/index.ts';
+	import { signUpConsentSchema, signUpSchema } from '#lib/zod/auth.schema.ts';
 	import { asset, resolve } from '$app/paths';
 
 	type FieldName =
 		'nombre' | 'apellidos' | 'ci' | 'telefono' | 'genero' | 'email' | 'birth_date' | 'direccion';
+	type ConsentName = 'mayor_edad' | 'acepta_terminos';
 
 	let form = $state<Record<FieldName, string>>({
 		nombre: '',
@@ -32,11 +34,12 @@
 		birth_date: '',
 		direccion: ''
 	});
+	let consent = $state<Record<ConsentName, boolean>>({ mayor_edad: false, acepta_terminos: false });
 	let isLoading = $state(false);
 	let fieldErrors = $state<Record<string, string>>({});
 	let formError = $state('');
 
-	const today = new Date().toLocaleDateString('en-CA');
+	const maxBirthDate = latestBirthDateForAge(EDAD_MINIMA_REGISTRO);
 
 	const generoOptions = [
 		{ value: 'M', label: 'Masculino' },
@@ -49,8 +52,12 @@
 		formError = '';
 
 		const result = validateSchema(signUpSchema, form);
-		if (!result.success) {
-			fieldErrors = result.errors;
+		const consentResult = validateSchema(signUpConsentSchema, consent);
+		if (!result.success || !consentResult.success) {
+			fieldErrors = {
+				...(result.success ? {} : result.errors),
+				...(consentResult.success ? {} : consentResult.errors)
+			};
 			return;
 		}
 		fieldErrors = {};
@@ -66,7 +73,7 @@
 		}
 	}
 
-	function clearFieldError(field: FieldName) {
+	function clearFieldError(field: FieldName | ConsentName) {
 		if (fieldErrors[field]) delete fieldErrors[field];
 	}
 
@@ -75,6 +82,8 @@
 	const inputValid =
 		'border-light-four_d focus:border-b-light-three dark:focus:border-b-dark-three';
 	const inputInvalid = 'border-light-error dark:border-dark-error';
+	const legalLinkClass =
+		'font-medium text-light-three underline underline-offset-2 hover:text-light-three_d dark:text-dark-three dark:hover:text-dark-three_d';
 </script>
 
 {#snippet label(id: string, text: string, required: boolean)}
@@ -86,7 +95,7 @@
 	</label>
 {/snippet}
 
-{#snippet fieldError(name: FieldName)}
+{#snippet fieldError(name: FieldName | ConsentName)}
 	{#if fieldErrors[name]}
 		<p id="{name}-error" class="text-xs text-light-error dark:text-dark-error">
 			{fieldErrors[name]}
@@ -122,7 +131,7 @@
 				{placeholder}
 				autocomplete={options.autocomplete}
 				inputmode={options.inputmode}
-				max={options.type === 'date' ? today : undefined}
+				max={options.type === 'date' ? maxBirthDate : undefined}
 				aria-required={options.required}
 				aria-invalid={!!fieldErrors[name]}
 				aria-describedby={[fieldErrors[name] && `${name}-error`, options.hint && `${name}-hint`]
@@ -143,6 +152,48 @@
 			</p>
 		{/if}
 	</div>
+{/snippet}
+
+{#snippet consentField(name: ConsentName, text: Snippet)}
+	<div class="space-y-1">
+		<label
+			class="flex cursor-pointer items-start gap-3 text-sm text-light-two_d dark:text-dark-two_d"
+		>
+			<input
+				id={name}
+				type="checkbox"
+				bind:checked={consent[name]}
+				onchange={() => clearFieldError(name)}
+				aria-required="true"
+				aria-invalid={!!fieldErrors[name]}
+				aria-describedby={fieldErrors[name] ? `${name}-error` : undefined}
+				class={[
+					'mt-0.5 size-4 shrink-0 cursor-pointer rounded bg-transparent text-light-three focus:ring-light-three disabled:opacity-60 dark:text-dark-three dark:focus:ring-dark-three',
+					fieldErrors[name]
+						? 'border-light-error dark:border-dark-error'
+						: 'border-light-four_d dark:border-dark-four_d'
+				]}
+				disabled={isLoading}
+			/>
+			<span>{@render text()}</span>
+		</label>
+		{@render fieldError(name)}
+	</div>
+{/snippet}
+
+{#snippet mayorEdadText()}
+	Declaro bajo juramento que soy mayor de {EDAD_MINIMA_REGISTRO} años.
+{/snippet}
+
+{#snippet aceptaTerminosText()}
+	He leído y acepto los
+	<a href={resolve('/(legal)/terminos')} target="_blank" rel="noopener" class={legalLinkClass}
+		>Términos y condiciones</a
+	>
+	y la
+	<a href={resolve('/(legal)/privacidad')} target="_blank" rel="noopener" class={legalLinkClass}
+		>Política de privacidad</a
+	>.
 {/snippet}
 
 <MainLayout
@@ -247,7 +298,19 @@
 					})}
 				</div>
 
-				<Button type="submit" variant="primary" size="lg" fullWidth loading={isLoading} class="mt-8">
+				<div class="mt-8 space-y-4">
+					{@render consentField('mayor_edad', mayorEdadText)}
+					{@render consentField('acepta_terminos', aceptaTerminosText)}
+				</div>
+
+				<Button
+					type="submit"
+					variant="primary"
+					size="lg"
+					fullWidth
+					loading={isLoading}
+					class="mt-8"
+				>
 					Crear cuenta
 				</Button>
 
