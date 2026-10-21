@@ -92,7 +92,7 @@
 			accept={PERFIL_AVATAR_TYPES.join(',')}
 			disabled={isBusy}
 			onchange={handleFileChange}
-			aria-describedby={error ? `${INPUT_ID}-error` : `${INPUT_ID}-hint`}
+			aria-describedby={error ? `${INPUT_ID}-error` : undefined}
 			aria-invalid={!!error}
 			class="peer sr-only"
 		/>
