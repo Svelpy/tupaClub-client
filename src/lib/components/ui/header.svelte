@@ -38,7 +38,6 @@
 		await goto(resolve('/auth/sign-in'), { replaceState: true });
 	}
 
-	// "Mi perfil" solo para los roles que pueden abrirlo (SUPERADMIN no tiene perfil)
 	const userMenuOptions = $derived<DropdownOption[]>([
 		...(canAccessRoute($currentRole, '/panel/perfil')
 			? [
