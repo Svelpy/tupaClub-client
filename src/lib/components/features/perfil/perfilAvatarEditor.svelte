@@ -6,7 +6,7 @@
 	import type { User } from '#lib/interfaces/index.ts';
 	import { errorService, perfilService } from '#lib/services/index.ts';
 	import { alert, validateSchema } from '#lib/utils/index.ts';
-	import { PERFIL_AVATAR_MAX_MB, PERFIL_AVATAR_TYPES, perfilAvatarSchema } from '#lib/zod/index.ts';
+	import { PERFIL_AVATAR_TYPES, perfilAvatarSchema } from '#lib/zod/index.ts';
 
 	interface Props {
 		user: User;
@@ -114,10 +114,6 @@
 	{#if error}
 		<p id="{INPUT_ID}-error" role="alert" class="text-sm text-light-error dark:text-dark-error">
 			{error}
-		</p>
-	{:else}
-		<p id="{INPUT_ID}-hint" class="text-xs text-light-two_d dark:text-dark-two_d">
-			JPG, PNG o WEBP · máximo {PERFIL_AVATAR_MAX_MB} MB
 		</p>
 	{/if}
 
