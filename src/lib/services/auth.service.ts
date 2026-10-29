@@ -7,9 +7,20 @@ import type {
 	RegisterRequest,
 	RegisterResponse
 } from '#lib/interfaces/index.ts';
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, USER_DATA_KEY } from '#lib/constants/index.ts';
+import { ErrorCode } from '#lib/interfaces/index.ts';
+import {
+	ACCESS_TOKEN_KEY,
+	REFRESH_LOCK_KEY,
+	REFRESH_TOKEN_KEY,
+	USER_DATA_KEY
+} from '#lib/constants/index.ts';
+import { AppError } from './error.service';
 
 class AuthService {
+	// Refresh en curso, compartido por todas las peticiones que recibieron 401 a la vez
+	private refreshPromise: Promise<string> | null = null;
+	private sessionExpiredListeners = new Set<() => void>();
+
 	public static getTokens(): AuthTokens | null {
 		try {
 			if (typeof localStorage === 'undefined') return null;
@@ -129,15 +140,55 @@ class AuthService {
 		return AuthService.getTokens()?.csrfToken || null;
 	}
 
-	async refreshToken(): Promise<string> {
+	/**
+	 * Renueva el access token. Las llamadas simultáneas comparten una sola petición: la cookie
+	 * refresh_token rota en cada refresh, así que un segundo refresh en paralelo usaría una ya invalidada.
+	 * @param staleToken token con el que falló la petición; si ya cambió, otra pestaña renovó la sesión
+	 */
+	refreshToken(staleToken?: string | null): Promise<string> {
+		this.refreshPromise ??= this.withRefreshLock(() => this.performRefresh(staleToken)).finally(
+			() => {
+				this.refreshPromise = null;
+			}
+		);
+		return this.refreshPromise;
+	}
+
+	/** Cierra la sesión local porque el servidor la rechazó y avisa a los suscriptores (p. ej. el store) */
+	expireSession(): void {
+		AuthService.clearAuth();
+		this.sessionExpiredListeners.forEach((listener) => listener());
+	}
+
+	/** Suscribe a la expiración de la sesión. Devuelve la función para desuscribirse */
+	onSessionExpired(listener: () => void): () => void {
+		this.sessionExpiredListeners.add(listener);
+		return () => this.sessionExpiredListeners.delete(listener);
+	}
+
+	// Web Locks serializa el refresh entre pestañas, que comparten la cookie y el localStorage
+	private withRefreshLock<T>(fn: () => Promise<T>): Promise<T> {
+		if (typeof navigator === 'undefined' || !navigator.locks) return fn();
+		return navigator.locks.request(REFRESH_LOCK_KEY, fn);
+	}
+
+	private async performRefresh(staleToken?: string | null): Promise<string> {
+		// Otra pestaña ya renovó la sesión mientras se esperaba el lock: se reutiliza su token
+		const currentToken = this.getToken();
+		if (staleToken && currentToken && currentToken !== staleToken) return currentToken;
+
 		const csrfToken = this.getCsrfToken();
 		if (!csrfToken) {
-			AuthService.clearAuth();
-			throw new Error('No csrf token available');
+			this.expireSession();
+			throw new AppError({
+				message: 'Tu sesión expiró. Inicia sesión nuevamente.',
+				code: ErrorCode.REFRESH_FAILED,
+				status: 401
+			});
 		}
 
 		try {
-			// Usamos postPublic para evitar headers de auth y recursión infinita.
+			// postPublic no envía el access token, así que un 401 aquí no dispara otro refresh.
 			// El refresh_token viaja en la cookie HttpOnly.
 			const response = await apiFidelityTupa.postPublic<LoginResponse>('/auth/refresh', undefined, {
 				withCredentials: true,
@@ -150,13 +201,12 @@ class AuthService {
 			});
 			return response.access_token;
 		} catch (error) {
-			AuthService.clearAuth();
+			// Solo el rechazo del servidor cierra la sesión; ante red caída o 5xx se conserva para reintentar
+			if (error instanceof AppError && (error.status === 401 || error.status === 403)) {
+				this.expireSession();
+			}
 			throw error;
 		}
-	}
-
-	clearToken(): void {
-		AuthService.clearAuth();
 	}
 }
 

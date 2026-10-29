@@ -22,6 +22,12 @@ export const isLoading = writable<boolean>(false);
 // Se pierde al recargar: así el rol siempre sale del servidor y no del localStorage (editable).
 let isSessionVerified = false;
 
+// El servidor rechazó la sesión (refresh fallido): se sincroniza el store con el localStorage ya limpio
+authService.onSessionExpired(() => {
+	isSessionVerified = false;
+	currentUserStore.set(null);
+});
+
 export const authStore = {
 	/**
 	 * Performs login and updates the store with user data
