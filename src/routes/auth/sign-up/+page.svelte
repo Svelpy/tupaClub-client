@@ -168,7 +168,7 @@
 				aria-invalid={!!fieldErrors[name]}
 				aria-describedby={fieldErrors[name] ? `${name}-error` : undefined}
 				class={[
-					'mt-0.5 size-4 shrink-0 cursor-pointer rounded bg-transparent text-light-three focus:ring-light-three disabled:opacity-60 dark:text-dark-three dark:focus:ring-dark-three',
+					'mt-0.5 size-4 shrink-0 cursor-pointer rounded text-light-three not-checked:bg-transparent focus:ring-light-three disabled:opacity-60 dark:text-dark-three dark:focus:ring-dark-three',
 					fieldErrors[name]
 						? 'border-light-error dark:border-dark-error'
 						: 'border-light-four_d dark:border-dark-four_d'
