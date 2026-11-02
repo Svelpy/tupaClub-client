@@ -3,7 +3,7 @@
 		CanjeEstadoDetalle,
 		CanjeStatusBadge
 	} from '#lib/components/features/panel/canjes/index.ts';
-	import { Image, QrCode } from '#lib/components/ui/index.ts';
+	import { BarCode, Image } from '#lib/components/ui/index.ts';
 	import { TicketIcon } from '#lib/icons/outline/index.ts';
 	import type { MiCanjeListItem } from '#lib/interfaces/index.ts';
 	import { cn, formatCodigoCanje, formatDateTime, getCanjeStatus } from '#lib/utils/index.ts';
@@ -23,11 +23,11 @@
 	const status = $derived(getCanjeStatus(canje, now));
 	// Solo un canje vigente se puede presentar en caja: el resto muestra su QR atenuado
 	const isVigente = $derived(status === 'PENDIENTE');
-	const qrClass = $derived(cn('size-28 rounded-lg p-1', !isVigente && 'opacity-25'));
+	const barCodeClass = $derived(cn('h-14 w-36 rounded-lg px-1 py-1.5', !isVigente && 'opacity-25'));
 </script>
 
 <article
-	class="flex gap-4 rounded-2xl border border-light-one_d bg-light-one p-4 dark:border-dark-one_d dark:bg-dark-one"
+	class="flex h-full gap-4 rounded-2xl border border-light-one_d bg-light-one p-4 dark:border-dark-one_d dark:bg-dark-one"
 >
 	<div class="min-w-0 flex-1">
 		<!-- El vale de este listado no trae imagen: se muestra la del negocio -->
@@ -40,20 +40,33 @@
 				<TicketIcon class="size-10" />
 			{/if}
 		</div>
-
-		<p class="mt-3 truncate text-sm font-semibold text-light-three dark:text-dark-three">
-			{item.negocio.nombre}
-		</p>
-		<h3 class="line-clamp-2 text-sm leading-snug text-light-two dark:text-dark-two">
-			{item.vale.nombre}
-		</h3>
+		<div>
+			<div class="mt-3 flex items-center gap-2.5">
+				<!-- El Image ocupa todo su contenedor: el tamaño del logo lo fija este wrapper -->
+				<div
+					class="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-light-one_d bg-light-one_d text-sm font-bold text-light-three uppercase dark:border-dark-one_d dark:bg-dark-one_d dark:text-dark-three"
+				>
+					{#if item.negocio.image_url}
+						<Image objectFit="cover" src={item.negocio.image_url} alt="" />
+					{:else}
+						<span aria-hidden="true">{item.negocio.nombre.charAt(0)}</span>
+					{/if}
+				</div>
+				<p class="min-w-0 truncate text-sm font-semibold text-light-three dark:text-dark-three">
+					{item.negocio.nombre}
+				</p>
+			</div>
+			<h3 class="mt-1.5 line-clamp-2 text-sm leading-snug text-light-two dark:text-dark-two">
+				{item.vale.nombre}
+			</h3>
+		</div>
 		<p class="mt-1.5 text-xs text-light-two_d dark:text-dark-two_d">
 			Solicitado el {formatDateTime(canje.created_at)}
 		</p>
 		<CanjeEstadoDetalle {canje} {now} class="block" />
 	</div>
 
-	<div class="flex w-28 shrink-0 flex-col items-center gap-1.5 text-center">
+	<div class="flex w-36 shrink-0 flex-col items-center gap-1.5 text-center">
 		<p class="text-xs text-light-two_d dark:text-dark-two_d">Código de canje</p>
 
 		{#if isVigente && onShowCodigo}
@@ -62,12 +75,12 @@
 				onclick={() => onShowCodigo(item)}
 				class="rounded-lg shadow-sm transition-transform [-webkit-tap-highlight-color:transparent] focus-visible:ring-2 focus-visible:ring-light-three/40 focus-visible:ring-offset-2 focus-visible:outline-none active:scale-95 dark:focus-visible:ring-dark-three/40"
 			>
-				<QrCode value={canje.codigo_canje} class={qrClass} />
+				<BarCode value={canje.codigo_canje} class={barCodeClass} />
 				<span class="sr-only">Ampliar el código de canje {canje.codigo_canje}</span>
 			</button>
 		{:else}
 			<div class="relative">
-				<QrCode value={canje.codigo_canje} class={qrClass} />
+				<BarCode value={canje.codigo_canje} class={barCodeClass} />
 				{#if !isVigente}
 					<!-- Fondo sólido: el badge es translúcido y se mezclaría con el QR -->
 					<span class="absolute inset-0 flex items-center justify-center">

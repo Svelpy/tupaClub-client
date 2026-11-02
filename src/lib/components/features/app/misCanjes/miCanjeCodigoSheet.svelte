@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { QrCode, Sheet } from '#lib/components/ui/index.ts';
+	import { BarCode, Sheet } from '#lib/components/ui/index.ts';
 	import { SunIcon } from '#lib/icons/solid/index.ts';
 	import type { MiCanjeListItem } from '#lib/interfaces/index.ts';
 	import { formatCodigoCanje, formatDate } from '#lib/utils/index.ts';
@@ -23,10 +23,10 @@
 >
 	{#if item}
 		<div class="flex flex-col items-center pt-2 text-center">
-			<QrCode
+			<BarCode
 				value={item.canje.codigo_canje}
-				label="Código QR del canje {item.canje.codigo_canje}"
-				class="size-60 max-w-full rounded-2xl p-3 shadow-sm ring-1 ring-light-one_d dark:ring-dark-one_d"
+				label="Código de barras del canje {item.canje.codigo_canje}"
+				class="h-32 w-full rounded-2xl p-3 shadow-sm ring-1 ring-light-one_d dark:ring-dark-one_d"
 			/>
 			<p
 				class="mt-4 font-mono text-3xl font-bold tracking-[0.15em] text-light-three tabular-nums select-all dark:text-dark-three"
