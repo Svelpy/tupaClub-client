@@ -161,6 +161,8 @@
 			}
 		} catch (error) {
 			formError = errorService.getMessage(error);
+			//para mostrar errores de validación en los campos del formulario, captura los errores que responde el backend y los asigna a fieldErrors
+			fieldErrors = errorService.getFieldErrors(error);
 		} finally {
 			isLoading = false;
 		}
