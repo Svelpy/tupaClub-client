@@ -5,12 +5,11 @@
 		CanjesPendientesCard,
 		ClientesResumenCard,
 		PanelShortcuts,
-		RegistrarCompraCard,
 		ResumenHoyCard,
 		TopValesCard
 	} from '#lib/components/features/panel/inicio/index.ts';
 	import { MainLayout } from '#lib/components/layout/index.ts';
-	import { ResumenAdminSkeleton, ResumenCajeroSkeleton } from '#lib/components/skeletons/index.ts';
+	import { ResumenAdminSkeleton } from '#lib/components/skeletons/index.ts';
 	import { Button, PageHeader, StatTile } from '#lib/components/ui/index.ts';
 	import { PANEL_NAVIGATION } from '#lib/config/navigation.config.ts';
 	import {
@@ -20,40 +19,31 @@
 		SparklesIcon,
 		WalletIcon
 	} from '#lib/icons/outline/index.ts';
-	import type { ResumenAdmin, ResumenCajero } from '#lib/interfaces/index.ts';
+	import type { ResumenAdmin } from '#lib/interfaces/index.ts';
 	import { errorService, resumenService } from '#lib/services/index.ts';
 	import { currentRole, currentUserStore } from '#lib/stores/index.ts';
 	import {
 		canAccessRoute,
 		canViewResumenAdmin,
-		canViewResumenCajero,
 		filterNavigation,
 		formatCurrency,
 		formatDateLong,
 		formatNumber
 	} from '#lib/utils/index.ts';
 
-	// Cada rol tiene su resumen: OWNER y ADMIN el del negocio, CAJERO el de sus propias compras.
-	// SUPERADMIN (y cualquier otro) ve el inicio sin resumen
-	const vista = $derived.by(() => {
-		if (canViewResumenAdmin($currentRole)) return 'admin';
-		if (canViewResumenCajero($currentRole)) return 'cajero';
-		return null;
-	});
-	// El cajero ya tiene la tarjeta "Registrar una compra" en su resumen: no se repite en el encabezado
-	const canRegistrarCompra = $derived(
-		vista !== 'cajero' && canAccessRoute($currentRole, '/panel/registrar-compra')
-	);
+	// Solo OWNER y ADMIN tienen resumen. El resto (SUPERADMIN, CAJERO, SOCIO...) ve el inicio sin
+	// resumen y no se llama a ningún endpoint de resumen
+	const vista = $derived(canViewResumenAdmin($currentRole) ? 'admin' : null);
+	const canRegistrarCompra = $derived(canAccessRoute($currentRole, '/panel/registrar-compra'));
 	const navigation = $derived(filterNavigation(PANEL_NAVIGATION, $currentRole));
 	const saludo = $derived(`Hola${$currentUserStore ? `, ${$currentUserStore.user.nombre}` : ''}.`);
 
 	let resumenAdmin = $state<ResumenAdmin | null>(null);
-	let resumenCajero = $state<ResumenCajero | null>(null);
 	let isLoading = $state(false);
 	let loadError = $state('');
 
-	const fecha = $derived(resumenAdmin?.fecha ?? resumenCajero?.fecha ?? null);
-	const hasData = $derived(resumenAdmin !== null || resumenCajero !== null);
+	const fecha = $derived(resumenAdmin?.fecha ?? null);
+	const hasData = $derived(resumenAdmin !== null);
 
 	// Evita que una respuesta lenta pise a la de un "Actualizar" posterior
 	let lastRequestId = 0;
@@ -64,13 +54,8 @@
 		loadError = '';
 		isLoading = true;
 		try {
-			if (vista === 'admin') {
-				const response = await resumenService.getAdmin();
-				if (requestId === lastRequestId) resumenAdmin = response;
-			} else {
-				const response = await resumenService.getCajero();
-				if (requestId === lastRequestId) resumenCajero = response;
-			}
+			const response = await resumenService.getAdmin();
+			if (requestId === lastRequestId) resumenAdmin = response;
 		} catch (error) {
 			if (requestId !== lastRequestId) return;
 			loadError = errorService.getMessage(error);
@@ -84,7 +69,6 @@
 	const description = $derived.by(() => {
 		if (!vista) return `${saludo} ¿Qué quieres hacer hoy?`;
 		if (!fecha) return `${saludo} Resumen de la actividad de puntos y canjes.`;
-		if (vista === 'cajero') return `${saludo} Tus compras registradas el ${formatDateLong(fecha)}.`;
 		return `${saludo} Este es el resumen del ${formatDateLong(fecha)}.`;
 	});
 
@@ -172,15 +156,6 @@
 							<TopValesCard vales={resumenAdmin.top_vales_mes} class="lg:col-span-2" />
 							<ClientesResumenCard clientes={resumenAdmin.clientes} />
 						</div>
-					{:else if resumenCajero}
-						<div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
-							<ResumenHoyCard
-								title="Tus ventas de hoy"
-								operaciones={resumenCajero.operaciones_hoy}
-								class="lg:col-span-2"
-							/>
-							<RegistrarCompraCard />
-						</div>
 					{/if}
 				</div>
 			{:else if loadError && !isLoading}
@@ -195,10 +170,8 @@
 						Reintentar
 					</Button> -->
 				</div>
-			{:else if vista === 'admin'}
-				<ResumenAdminSkeleton />
 			{:else}
-				<ResumenCajeroSkeleton />
+				<ResumenAdminSkeleton />
 			{/if}
 		{/if}
 
