@@ -5,7 +5,6 @@
 	import type { MiMovimientoListItem, MovimientoTipo } from '#lib/interfaces/index.ts';
 	import {
 		formatCodigoCanje,
-		formatCurrency,
 		formatDateTime,
 		formatMovimientoPuntos,
 		formatValue,
@@ -42,9 +41,7 @@
 		const { operacion, canje, vale } = item;
 		if (movimiento.tipo_movimiento === 'ACUMULA') {
 			return {
-				title: operacion
-					? `Compra de ${formatCurrency(operacion.total_compra)}`
-					: 'Puntos por compra',
+				title: operacion ? 'Compra' : 'Puntos por compra',
 				extra: operacion?.referencia ?? null
 			};
 		}

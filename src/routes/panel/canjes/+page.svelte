@@ -11,7 +11,7 @@
 		CanjeVencidosBanner
 	} from '#lib/components/features/panel/canjes/index.ts';
 	import { SucursalFilter } from '#lib/components/features/panel/sucursales/index.ts';
-	import { Action, Module } from '#lib/config/index.ts';
+	import { Action, Module, Role } from '#lib/config/index.ts';
 	import { PAGINATION } from '#lib/constants/index.ts';
 	import { StopwatchIcon, TicketIcon, XIcon } from '#lib/icons/outline/index.ts';
 	import type {
@@ -26,6 +26,9 @@
 
 	// Confirmar, cancelar y expirar cambian el estado del canje
 	const canUpdate = $derived(can($currentRole, Module.CANJE, Action.UPDATE));
+	// El socio atiende solo en su sucursal: no filtra por sucursal ni expira vencidos en lote
+	const isSocio = $derived($currentRole === Role.SOCIO);
+	const canExpire = $derived(canUpdate && !isSocio);
 
 	let canjes = $state<CanjeListItem[]>([]);
 	let currentPage = $state<number>(PAGINATION.DEFAULT_PAGE);
@@ -158,15 +161,17 @@
 
 	onMount(() => {
 		loadCanjes(PAGINATION.DEFAULT_PAGE);
-		loadOptions();
+		if (!isSocio) loadOptions();
 	});
 </script>
 
 {#snippet headerActions()}
-	<Button variant="outline" onclick={handleExpire} loading={isExpiring} class="w-full sm:w-auto">
-		{#snippet leftIcon()}<StopwatchIcon class="size-5" />{/snippet}
-		Expirar vencidos
-	</Button>
+	{#if canExpire}
+		<Button variant="outline" onclick={handleExpire} loading={isExpiring} class="w-full sm:w-auto">
+			{#snippet leftIcon()}<StopwatchIcon class="size-5" />{/snippet}
+			Expirar vencidos
+		</Button>
+	{/if}
 	<!-- Separado de confirmar: cada flujo busca el canje por código y hace una sola acción -->
 	<Button variant="outline" onclick={() => (isCancelCodigoOpen = true)} class="w-full sm:w-auto">
 		{#snippet leftIcon()}<XIcon class="size-5" />{/snippet}
@@ -178,6 +183,18 @@
 	</Button>
 {/snippet}
 
+{#snippet sucursalToolbar()}
+	<SucursalFilter
+		id="canjes-sucursal"
+		{negocios}
+		{sucursalId}
+		{isLoadingOptions}
+		{optionsError}
+		onChange={(value) => applyFilters({ sucursalId: value })}
+		onRetry={loadOptions}
+	/>
+{/snippet}
+
 <MainLayout title="Canjes" noIndex class="container mx-auto">
 	<PageHeader title="Canjes" actions={canUpdate ? headerActions : undefined} />
 
@@ -185,20 +202,9 @@
 		{status}
 		total={isLoading ? null : total}
 		onChange={(value) => applyFilters({ status: value })}
+		toolbar={isSocio ? undefined : sucursalToolbar}
 	>
-		{#snippet toolbar()}
-			<SucursalFilter
-				id="canjes-sucursal"
-				{negocios}
-				{sucursalId}
-				{isLoadingOptions}
-				{optionsError}
-				onChange={(value) => applyFilters({ sucursalId: value })}
-				onRetry={loadOptions}
-			/>
-		{/snippet}
-
-		{#if canUpdate && vencidosCount > 0}
+		{#if canExpire && vencidosCount > 0}
 			<CanjeVencidosBanner count={vencidosCount} {isExpiring} onExpire={handleExpire} />
 		{/if}
 

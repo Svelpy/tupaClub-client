@@ -53,9 +53,9 @@
 		<p class="font-semibold text-light-three tabular-nums dark:text-dark-three">
 			{formatNumber(item.canje.total_puntos)} pts
 		</p>
-		<p class="text-xs text-light-two_d tabular-nums dark:text-dark-two_d">
+		<!-- <p class="text-xs text-light-two_d tabular-nums dark:text-dark-two_d">
 			{formatCurrency(item.canje.total_costo)}
-		</p>
+		</p> -->
 	</TableCell>
 	<TableCell class="px-4 py-3">
 		<div class="flex flex-col items-start gap-1">

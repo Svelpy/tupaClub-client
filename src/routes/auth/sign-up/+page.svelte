@@ -182,7 +182,7 @@
 {/snippet}
 
 {#snippet mayorEdadText()}
-	Declaro bajo juramento que soy mayor de {EDAD_MINIMA_REGISTRO} años.
+	Soy mayor de {EDAD_MINIMA_REGISTRO} años.
 {/snippet}
 
 {#snippet aceptaTerminosText()}

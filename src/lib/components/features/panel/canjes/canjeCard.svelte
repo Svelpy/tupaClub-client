@@ -61,12 +61,12 @@
 				{formatNumber(item.canje.total_puntos)} pts
 			</dd>
 		</div>
-		<div class="text-right">
+		<!-- <div class="text-right">
 			<dt class="text-xs text-light-two_d dark:text-dark-two_d">Valor</dt>
 			<dd class="font-semibold text-light-two tabular-nums dark:text-dark-two">
 				{formatCurrency(item.canje.total_costo)}
 			</dd>
-		</div>
+		</div> -->
 		<div class="col-span-2 flex justify-between gap-2 text-xs">
 			<dt class="text-light-two_d dark:text-dark-two_d">Solicitado</dt>
 			<dd class="text-right text-light-two dark:text-dark-two">
