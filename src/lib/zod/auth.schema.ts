@@ -14,6 +14,28 @@ export const signInSchema = z.object({
 		.min(6, { message: 'La contraseña debe tener al menos 6 caracteres.' })
 });
 
+export const forgotPasswordSchema = z.object({
+	ci: z
+		.string()
+		.trim()
+		.nonempty({ message: 'La cédula de identidad es requerida' })
+		.max(20, { message: 'La cédula no puede exceder los 20 caracteres.' })
+		.regex(/^[0-9A-Za-z-]+$/, { message: 'Solo se permiten números, letras y guiones.' })
+});
+
+export const resetPasswordSchema = z
+	.object({
+		new_password: z
+			.string()
+			.nonempty({ message: 'La nueva contraseña es requerida' })
+			.min(6, { message: 'La contraseña debe tener al menos 6 caracteres.' }),
+		confirm_password: z.string().nonempty({ message: 'Confirma tu nueva contraseña' })
+	})
+	.refine((data) => data.new_password === data.confirm_password, {
+		message: 'Las contraseñas no coinciden.',
+		path: ['confirm_password']
+	});
+
 // Campo opcional: un texto vacío se envía como null
 const optionalText = (max: number, label: string) =>
 	z

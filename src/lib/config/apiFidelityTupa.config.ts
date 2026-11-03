@@ -94,8 +94,8 @@ class ApiFidelityTupa {
 				if (response.status === 401) authService.expireSession();
 			}
 
-			// Manejar respuesta 204 (No Content)
-			if (response.status === 204) {
+			// Manejar respuestas sin cuerpo: 204 (No Content) y 202 (Accepted, p. ej. forgot-password)
+			if (response.status === 204 || response.status === 202) {
 				return {} as T;
 			}
 

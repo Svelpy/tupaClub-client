@@ -121,12 +121,16 @@ class AuthService {
 		return apiFidelityTupa.postPublic<RegisterResponse>('/auth/register', data);
 	}
 
-	async forgotPassword(email: string): Promise<void> {
-		await apiFidelityTupa.postPublic('/auth/forgot-password', { email });
+	/** Siempre responde 202: no revela si la cédula existe ni si tiene email registrado */
+	async forgotPassword(ci: string): Promise<void> {
+		await apiFidelityTupa.postPublic('/auth/forgot-password', { ci });
 	}
 
-	async resetPassword(token: string, password: string): Promise<void> {
-		await apiFidelityTupa.postPublic(`/auth/reset-password/${token}`, { password });
+	async resetPassword(token: string, newPassword: string): Promise<void> {
+		await apiFidelityTupa.postPublic('/auth/reset-password', {
+			token,
+			new_password: newPassword
+		});
 	}
 
 	async logout(): Promise<void> {
