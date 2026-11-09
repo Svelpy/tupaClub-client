@@ -14,3 +14,4 @@ export * from './puntos';
 export * from './maps';
 export * from './movimiento';
 export * from './date';
+export * from './download';

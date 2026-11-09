@@ -9,3 +9,4 @@ export * from './administrador.schema';
 export * from './operacion.schema';
 export * from './vale.schema';
 export * from './perfil.schema';
+export * from './reporte.schema';

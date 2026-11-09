@@ -2,6 +2,7 @@ import { resolveStaticRoute } from '#lib/utils/resolveRoute.ts';
 import {
 	ArrowsLeftRightIcon,
 	BriefcaseIcon,
+	FileDescriptionIcon,
 	GiftIcon,
 	HomeDotIcon,
 	SearchIcon,
@@ -131,6 +132,18 @@ export const PANEL_NAVIGATION: NavSection[] = [
 				label: 'Administradores',
 				route: '/panel/administradores',
 				icon: ShieldIcon
+			})
+		]
+	},
+	{
+		id: 'analisis',
+		label: 'Análisis',
+		items: [
+			navItem({
+				id: 'reportes',
+				label: 'Reportes',
+				route: '/panel/reportes',
+				icon: FileDescriptionIcon
 			})
 		]
 	},

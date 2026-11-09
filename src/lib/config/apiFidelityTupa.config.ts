@@ -7,6 +7,8 @@ interface RequestOptions {
 	customHeaders?: HeadersInit;
 	// Enviar/recibir cookies (p. ej. refresh_token HttpOnly)
 	withCredentials?: boolean;
+	// Milisegundos de espera; por defecto API_CONFIG.TIMEOUT
+	timeout?: number;
 }
 
 class ApiFidelityTupa {
@@ -51,7 +53,7 @@ class ApiFidelityTupa {
 		token: string | null
 	): Promise<Response> {
 		const controller = new AbortController();
-		const timeoutId = setTimeout(() => controller.abort(), API_CONFIG.TIMEOUT);
+		const timeoutId = setTimeout(() => controller.abort(), options.timeout ?? API_CONFIG.TIMEOUT);
 
 		try {
 			const headers = this.buildHeaders(options, token);
@@ -75,11 +77,13 @@ class ApiFidelityTupa {
 	}
 
 	// Método genérico para solicitudes. Siempre lanza AppError.
+	// `parse` lee el cuerpo de una respuesta exitosa (JSON por defecto; Blob para archivos)
 	private async request<T>(
 		endpoint: string,
 		method: string,
 		data?: unknown,
-		options: RequestOptions = {}
+		options: RequestOptions = {},
+		parse: (response: Response) => Promise<T> = (response) => response.json()
 	): Promise<T> {
 		try {
 			const token = this.resolveToken(options);
@@ -103,7 +107,7 @@ class ApiFidelityTupa {
 				throw await errorService.fromResponse(response);
 			}
 
-			return await response.json();
+			return await parse(response);
 		} catch (error) {
 			const appError = errorService.fromUnknown(error);
 			errorService.log(appError);
@@ -114,6 +118,11 @@ class ApiFidelityTupa {
 	// Métodos para diferentes tipos de solicitudes
 	async get<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
 		return this.request<T>(endpoint, 'GET', undefined, options);
+	}
+
+	/** GET de un archivo (p. ej. un Excel): devuelve el cuerpo como Blob. Los errores llegan en JSON */
+	async getBlob(endpoint: string, options: RequestOptions = {}): Promise<Blob> {
+		return this.request<Blob>(endpoint, 'GET', undefined, options, (response) => response.blob());
 	}
 
 	async post<T>(endpoint: string, data: unknown, options: RequestOptions = {}): Promise<T> {

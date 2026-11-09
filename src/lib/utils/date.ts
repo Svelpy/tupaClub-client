@@ -1,6 +1,11 @@
+/** Fecha en formato YYYY-MM-DD (hora local) */
+export function toISODate(date: Date): string {
+	return date.toLocaleDateString('en-CA');
+}
+
 /** Fecha de hoy en formato YYYY-MM-DD (hora local) */
 export function todayISO(): string {
-	return new Date().toLocaleDateString('en-CA');
+	return toISODate(new Date());
 }
 
 /** Última fecha de nacimiento (YYYY-MM-DD) con la que hoy se tienen al menos `years` años */

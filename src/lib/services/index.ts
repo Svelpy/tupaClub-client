@@ -12,3 +12,4 @@ export * from './operacion.service';
 export * from './resumen.service';
 export * from './perfil.service';
 export * from './movimiento.service';
+export * from './reporte.service';

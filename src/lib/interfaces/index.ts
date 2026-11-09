@@ -16,3 +16,4 @@ export * from './operacion.interface';
 export * from './resumen.interface';
 export * from './perfil.interface';
 export * from './movimiento.interface';
+export * from './reporte.interface';
