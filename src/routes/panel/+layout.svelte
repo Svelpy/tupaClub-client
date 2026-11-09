@@ -1,10 +1,14 @@
 <script lang="ts">
-	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { Header, Sidebar } from '#lib/components/ui/index.ts';
 	import { PANEL_NAVIGATION } from '#lib/config/navigation.config.ts';
 	import { currentRole, currentUserStore } from '#lib/stores/index.ts';
-	import { filterNavigation, findActiveNavItem, getHomeRoute } from '#lib/utils/index.ts';
+	import {
+		filterNavigation,
+		findActiveNavItem,
+		getHomeRoute,
+		resolveStaticRoute
+	} from '#lib/utils/index.ts';
 
 	let { children } = $props();
 
@@ -13,7 +17,9 @@
 
 	// Solo las páginas que el rol puede abrir
 	const navigation = $derived(filterNavigation(PANEL_NAVIGATION, $currentRole));
-	const homeHref = $derived(resolve($currentRole ? getHomeRoute($currentRole) : '/panel'));
+	const homeHref = $derived(
+		resolveStaticRoute($currentRole ? getHomeRoute($currentRole) : '/panel')
+	);
 	const title = $derived(findActiveNavItem(navigation, page.url.pathname)?.label ?? 'Panel');
 </script>
 

@@ -18,6 +18,7 @@
 		canAccessRoute,
 		getHomeRoute,
 		isSafeRedirect,
+		resolveStaticRoute,
 		validateSchema
 	} from '#lib/utils/index.ts';
 	import { signInSchema } from '#lib/zod/auth.schema.ts';
@@ -40,7 +41,7 @@
 			const target = await match(redirectTo);
 			if (target && canAccessRoute(role, target.id)) return redirectTo;
 		}
-		return resolve(getHomeRoute(role));
+		return resolveStaticRoute(getHomeRoute(role));
 	}
 
 	async function handleSubmit(event: SubmitEvent) {
@@ -88,11 +89,11 @@
 			class="relative w-full max-w-md self-start rounded-3xl bg-light-one p-6 md:self-auto md:p-8 md:shadow-2xl md:ring-1 md:ring-light-four dark:bg-dark-one md:dark:ring-dark-four"
 		>
 			<img
-				src={asset('images/logo_app.webp')}
+				src={asset('logos/tupaclub.webp')}
 				alt="Logo de la aplicación"
 				width="96"
 				height="96"
-				class="mx-auto mb-4 size-20 rounded-2xl object-cover shadow-lg ring-1 ring-light-four md:mb-6 md:size-24 dark:ring-dark-four"
+				class="mx-auto mb-4 h-16 w-52 object-cover md:mb-6 dark:ring-dark-four"
 			/>
 			<Heading level="h4" class="text-center text-light-two dark:text-dark-two"
 				>Iniciar sesión</Heading

@@ -6,6 +6,7 @@ export * from './validateSchema';
 export * from './alert';
 export * from './portal';
 export * from './rbac.utils';
+export * from './resolveRoute';
 export * from './navigation';
 export * from './pagination';
 export * from './canje';

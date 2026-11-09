@@ -204,14 +204,20 @@
 		<div
 			class="relative w-full max-w-2xl self-start rounded-3xl bg-light-one p-6 md:self-auto md:p-8 md:shadow-2xl md:ring-1 md:ring-light-four dark:bg-dark-one md:dark:ring-dark-four"
 		>
-			<img
+			<!-- <img
 				src={asset('images/logo_app.webp')}
 				alt="Logo de la aplicación"
 				width="96"
 				height="96"
 				class="mx-auto mb-4 size-20 rounded-2xl object-cover shadow-lg ring-1 ring-light-four md:mb-6 md:size-24 dark:ring-dark-four"
+			/> -->
+			<img
+				src={asset('logos/tupaclub.webp')}
+				alt="Logo de la aplicación"
+				width="96"
+				height="96"
+				class="mx-auto mb-4 h-16 w-52 object-cover md:mb-6 dark:ring-dark-four"
 			/>
-
 			<form onsubmit={handleSubmit} novalidate>
 				<Heading level="h4" class="text-center text-light-two dark:text-dark-two">
 					Crear cuenta

@@ -1,5 +1,5 @@
 export const APP_SITE_CONFIG = {
-	APP_NAME: 'TUPA CLUB',
+	APP_NAME: 'TUPACLUB',
 	APP_SLOGAN: 'Ahorra con tus compras',
 	APP_TWITTER_HANDLE: '@lubricantesYolanda',
 	DEFAULT_OG_IMAGE: '/images/logo_app.webp',

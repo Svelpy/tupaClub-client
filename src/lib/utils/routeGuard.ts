@@ -3,6 +3,7 @@ import { resolve } from '$app/paths';
 import type { Role } from '#lib/config/permissions.config.ts';
 import { authStore } from '#lib/stores/index.ts';
 import { canAccessRoute, getHomeRoute, isRole } from './rbac.utils';
+import { resolveStaticRoute } from './resolveRoute';
 
 type GuardEvent = Pick<LoadEvent, 'route' | 'url' | 'untrack'>;
 
@@ -32,7 +33,7 @@ export async function guardRoute({ route, url, untrack }: GuardEvent): Promise<R
 		redirect(307, resolve('/auth/sign-in'));
 	}
 
-	if (!canAccessRoute(role, route.id)) redirect(307, resolve(getHomeRoute(role)));
+	if (!canAccessRoute(role, route.id)) redirect(307, resolveStaticRoute(getHomeRoute(role)));
 
 	return role;
 }

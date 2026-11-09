@@ -1,4 +1,4 @@
-import { resolve } from '$app/paths';
+import { resolveStaticRoute } from '#lib/utils/resolveRoute.ts';
 import {
 	ArrowsLeftRightIcon,
 	BriefcaseIcon,
@@ -19,11 +19,11 @@ import type { ClientNavItem, NavItem, NavSection } from '#lib/interfaces/index.t
 
 /** El href se resuelve desde la ruta: una sola fuente para el link y para el control de acceso */
 function navItem(item: Omit<NavItem, 'href'>): NavItem {
-	return { ...item, href: resolve(item.route) };
+	return { ...item, href: resolveStaticRoute(item.route) };
 }
 
 function clientNavItem(item: Omit<ClientNavItem, 'href'>): ClientNavItem {
-	return { ...item, href: resolve(item.route) };
+	return { ...item, href: resolveStaticRoute(item.route) };
 }
 
 /**
