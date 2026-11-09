@@ -5,11 +5,13 @@
 	import { AlertTriangleIcon, RefreshIcon } from '#lib/icons/outline/index.ts';
 	import type { CurrentUser, User } from '#lib/interfaces/index.ts';
 	import { errorService, perfilService } from '#lib/services/index.ts';
-	import { authStore } from '#lib/stores/index.ts';
+	import { authStore, currentRole } from '#lib/stores/index.ts';
+	import { canChangeSucursal } from '#lib/utils/index.ts';
 	import PerfilDatosForm from './perfilDatosForm.svelte';
 	import PerfilPasswordForm from './perfilPasswordForm.svelte';
 	import PerfilResumenCard from './perfilResumenCard.svelte';
 	import PerfilSucursalCard from './perfilSucursalCard.svelte';
+	import PerfilSucursalModal from './perfilSucursalModal.svelte';
 
 	interface Props {
 		/** Saldo de puntos en el resumen (área de clientes) */
@@ -23,6 +25,7 @@
 	let perfil = $state<CurrentUser | null>(null);
 	let isLoading = $state(false);
 	let loadError = $state('');
+	let isSucursalModalOpen = $state(false);
 
 	async function loadPerfil() {
 		loadError = '';
@@ -55,7 +58,11 @@
 		<div class="space-y-6">
 			<PerfilResumenCard user={perfil.user} {showPuntos} onUpdated={handleUserUpdated} />
 			{#if showSucursal && (perfil.negocio || perfil.sucursal)}
-				<PerfilSucursalCard negocio={perfil.negocio} sucursal={perfil.sucursal} />
+				<PerfilSucursalCard
+					negocio={perfil.negocio}
+					sucursal={perfil.sucursal}
+					onChange={canChangeSucursal($currentRole) ? () => (isSucursalModalOpen = true) : undefined}
+				/>
 			{/if}
 		</div>
 
@@ -64,6 +71,13 @@
 			<PerfilPasswordForm />
 		</div>
 	</div>
+
+	{#if canChangeSucursal($currentRole)}
+		<PerfilSucursalModal
+			isOpen={isSucursalModalOpen}
+			onClose={() => (isSucursalModalOpen = false)}
+		/>
+	{/if}
 {:else if loadError && !isLoading}
 	<div
 		role="alert"

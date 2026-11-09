@@ -80,7 +80,13 @@ export const RESUMEN_ADMIN_ROLES: readonly Role[] = [Role.OWNER, Role.ADMIN];
 /** Roles que ven el resumen de sus propias compras del día (`/resumen/cajero`, `require_role(CAJERO)`) */
 export const RESUMEN_CAJERO_ROLES: readonly Role[] = [Role.CAJERO];
 
-type ModulePermissions = Partial<Record<Module, readonly Action[]>>;
+/**
+ * Roles que pueden cambiar su propia sucursal (`PATCH /users/me/sucursal`).
+ * Solo a sucursales del negocio MAIN; lo valida el backend.
+ */
+export const CHANGE_SUCURSAL_ROLES: readonly Role[] = [Role.ADMIN, Role.CAJERO];
+
+type ModulePermissions =Partial<Record<Module, readonly Action[]>>;
 
 const ALL_ACTIONS: readonly Action[] = [Action.CREATE, Action.READ, Action.UPDATE, Action.DELETE];
 const SOLO_LECTURA: readonly Action[] = [Action.READ];

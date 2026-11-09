@@ -15,6 +15,11 @@ export interface PerfilDatos {
 /** PATCH: solo se envían los campos modificados */
 export type UpdatePerfilRequest = Partial<PerfilDatos>;
 
+/** Sucursal destino; debe pertenecer al negocio MAIN */
+export interface ChangePerfilSucursalRequest {
+	sucursal_id: string;
+}
+
 export interface ChangePerfilPasswordRequest {
 	current_password: string;
 	new_password: string;

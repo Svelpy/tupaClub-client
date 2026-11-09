@@ -1,6 +1,7 @@
 import { apiFidelityTupa } from '#lib/config/index.ts';
 import type {
 	ChangePerfilPasswordRequest,
+	ChangePerfilSucursalRequest,
 	CurrentUser,
 	UpdatePerfilRequest,
 	User
@@ -15,6 +16,12 @@ class PerfilService {
 
 	async update(data: UpdatePerfilRequest): Promise<User> {
 		return apiFidelityTupa.patch<User>('/users/me', data, { requireAuth: true });
+	}
+
+	/** Solo ADMIN y CAJERO, y solo hacia sucursales del negocio MAIN. Devuelve la sesión completa */
+	async changeSucursal(sucursalId: string): Promise<CurrentUser> {
+		const body: ChangePerfilSucursalRequest = { sucursal_id: sucursalId };
+		return apiFidelityTupa.patch<CurrentUser>('/users/me/sucursal', body, { requireAuth: true });
 	}
 
 	async changePassword(data: ChangePerfilPasswordRequest): Promise<User> {

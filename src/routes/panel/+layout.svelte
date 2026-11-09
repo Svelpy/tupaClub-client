@@ -3,7 +3,7 @@
 	import { page } from '$app/state';
 	import { Header, Sidebar } from '#lib/components/ui/index.ts';
 	import { PANEL_NAVIGATION } from '#lib/config/navigation.config.ts';
-	import { currentRole } from '#lib/stores/index.ts';
+	import { currentRole, currentUserStore } from '#lib/stores/index.ts';
 	import { filterNavigation, findActiveNavItem, getHomeRoute } from '#lib/utils/index.ts';
 
 	let { children } = $props();
@@ -28,7 +28,10 @@
 			onToggleSidebar={() => (sidebarOpen = !sidebarOpen)}
 		/>
 		<main class="flex-1 px-4 py-6 md:px-6 lg:px-8">
-			{@render children()}
+			<!-- Al cambiar de sucursal las páginas se montan de nuevo y recargan sus datos con la sucursal nueva -->
+			{#key $currentUserStore?.user.sucursal_id}
+				{@render children()}
+			{/key}
 		</main>
 	</div>
 </div>

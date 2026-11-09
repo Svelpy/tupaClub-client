@@ -5,6 +5,7 @@ import { filterNavigation } from './navigation';
 import {
 	can,
 	canAccessRoute,
+	canChangeSucursal,
 	canManageUserRole,
 	canViewResumenAdmin,
 	canViewResumenCajero,
@@ -287,5 +288,16 @@ describe('canViewResumenCajero', () => {
 			expect(canViewResumenCajero(role)).toBe(false);
 		}
 		expect(canViewResumenCajero(null)).toBe(false);
+	});
+});
+
+describe('canChangeSucursal', () => {
+	it('solo ADMIN y CAJERO pueden cambiarse de sucursal', () => {
+		expect(canChangeSucursal(Role.ADMIN)).toBe(true);
+		expect(canChangeSucursal(Role.CAJERO)).toBe(true);
+		for (const role of [Role.SUPERADMIN, Role.OWNER, Role.SOCIO, Role.CLIENTE]) {
+			expect(canChangeSucursal(role)).toBe(false);
+		}
+		expect(canChangeSucursal(null)).toBe(false);
 	});
 });

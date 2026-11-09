@@ -1,6 +1,6 @@
 import { writable, derived, get } from 'svelte/store';
 import type { LoginCredentials, CurrentUser, User } from '#lib/interfaces/index.ts';
-import { AppError, authService } from '#lib/services/index.ts';
+import { AppError, authService, perfilService } from '#lib/services/index.ts';
 import { isRole } from '#lib/utils/rbac.utils.ts';
 
 // Store for current user data
@@ -97,6 +97,16 @@ export const authStore = {
 	setUser: (userData: CurrentUser) => {
 		currentUserStore.set(userData);
 		authService.setCurrentUser(userData);
+	},
+
+	/**
+	 * Cambia la sucursal del usuario (ADMIN/CAJERO) en el servidor y actualiza la sesión:
+	 * el store y el localStorage quedan con la nueva sucursal (y su negocio).
+	 */
+	changeSucursal: async (sucursalId: string): Promise<CurrentUser> => {
+		const userData = await perfilService.changeSucursal(sucursalId);
+		authStore.setUser(userData);
+		return userData;
 	},
 
 	/** Reemplaza los datos del usuario de la sesión (p. ej. tras editar su perfil o su avatar) */

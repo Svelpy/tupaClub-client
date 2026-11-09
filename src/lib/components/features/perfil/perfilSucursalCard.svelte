@@ -4,16 +4,24 @@
 		NegocioAvatar,
 		NegocioTipoBadge
 	} from '#lib/components/features/panel/negocios/index.ts';
-	import { BuildindStoreIcon, MapPinIcon, PhoneIcon } from '#lib/icons/outline/index.ts';
+	import { Button } from '#lib/components/ui/index.ts';
+	import {
+		ArrowsLeftRightIcon,
+		BuildindStoreIcon,
+		MapPinIcon,
+		PhoneIcon
+	} from '#lib/icons/outline/index.ts';
 	import type { Negocio, Sucursal } from '#lib/interfaces/index.ts';
 	import { formatValue, getSucursalMapsUrl } from '#lib/utils/index.ts';
 
 	interface Props {
 		negocio: Negocio | null;
 		sucursal: Sucursal | null;
+		/** Si se pasa, la tarjeta muestra el botón para cambiar de sucursal (ADMIN y CAJERO) */
+		onChange?: () => void;
 	}
 
-	let { negocio, sucursal }: Props = $props();
+	let { negocio, sucursal, onChange }: Props = $props();
 
 	type IconComponent = Component<{ class?: string }>;
 </script>
@@ -86,5 +94,12 @@
 				sucursal.telefono ? `tel:${sucursal.telefono}` : undefined
 			)}
 		</div>
+	{/if}
+
+	{#if onChange}
+		<Button variant="outline" size="sm" onclick={onChange} class="mt-5 w-full">
+			{#snippet leftIcon()}<ArrowsLeftRightIcon class="size-4" />{/snippet}
+			Cambiar sucursal
+		</Button>
 	{/if}
 </section>

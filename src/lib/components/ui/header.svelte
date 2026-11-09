@@ -1,10 +1,17 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { asset, resolve } from '$app/paths';
-	import { ChevronDownIcon, LogOutIcon, Menu2Icon, UserIcon } from '#lib/icons/outline/index.ts';
+	import { PerfilSucursalModal } from '#lib/components/features/perfil/index.ts';
+	import {
+		BuildindStoreIcon,
+		ChevronDownIcon,
+		LogOutIcon,
+		Menu2Icon,
+		UserIcon
+	} from '#lib/icons/outline/index.ts';
 	import type { DropdownOption } from '#lib/interfaces/index.ts';
 	import { authStore, currentRole, currentUserStore } from '#lib/stores/index.ts';
-	import { canAccessRoute } from '#lib/utils/index.ts';
+	import { canAccessRoute, canChangeSucursal } from '#lib/utils/index.ts';
 	import DropdownMenu from './dropdownMenu.svelte';
 
 	interface Props {
@@ -20,6 +27,7 @@
 	let { title, sidebarOpen, sidebarId, onToggleSidebar }: Props = $props();
 
 	let isUserMenuOpen = $state(false);
+	let isSucursalModalOpen = $state(false);
 	let userMenuTrigger = $state<HTMLButtonElement>();
 
 	const user = $derived($currentUserStore?.user);
@@ -27,9 +35,10 @@
 	const initials = $derived(
 		user ? `${user.nombre.charAt(0)}${user.apellidos?.charAt(0) ?? ''}`.toUpperCase() : ''
 	);
-	// Socio: nombre del negocio. Resto: rol del usuario
+	// Admin/Cajero: sucursal donde trabaja. Socio: nombre del negocio. Resto: rol del usuario
 	const subtitle = $derived(
-		$currentUserStore?.negocio?.nombre ??
+		(canChangeSucursal($currentRole) ? $currentUserStore?.sucursal?.nombre : undefined) ??
+			$currentUserStore?.negocio?.nombre ??
 			(user ? user.role.charAt(0) + user.role.slice(1).toLowerCase() : '')
 	);
 
@@ -46,6 +55,16 @@
 						label: 'Mi perfil',
 						icon: UserIcon,
 						action: () => goto(resolve('/panel/perfil'))
+					}
+				]
+			: []),
+		...(canChangeSucursal($currentRole)
+			? [
+					{
+						id: 'cambiar-sucursal',
+						label: 'Cambiar sucursal',
+						icon: BuildindStoreIcon,
+						action: () => (isSucursalModalOpen = true)
 					}
 				]
 			: []),
@@ -124,3 +143,8 @@
 		/>
 	{/if}
 </header>
+
+<!-- Fuera del <header>: su backdrop-blur haría que el overlay fixed del modal se recorte al header -->
+{#if canChangeSucursal($currentRole)}
+	<PerfilSucursalModal isOpen={isSucursalModalOpen} onClose={() => (isSucursalModalOpen = false)} />
+{/if}

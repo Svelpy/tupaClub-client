@@ -2,6 +2,7 @@ import { apiFidelityTupa } from '#lib/config/index.ts';
 import type {
 	CreateNegocioRequest,
 	NegocioDetail,
+	NegocioListItem,
 	NegocioListParams,
 	NegocioListResponse,
 	UpdateNegocioRequest
@@ -16,6 +17,12 @@ class NegocioService {
 		return apiFidelityTupa.get<NegocioListResponse>(`/negocios/?${query}`, {
 			requireAuth: true
 		});
+	}
+
+	/** El negocio MAIN (solo existe uno) con sus sucursales; null si aún no existe */
+	async getMain(): Promise<NegocioListItem | null> {
+		const response = await this.list({ tipo: 'MAIN', per_page: 1 });
+		return response.data[0] ?? null;
 	}
 
 	async create(data: CreateNegocioRequest): Promise<NegocioDetail> {

@@ -1,5 +1,6 @@
 import {
 	ASSIGNABLE_USER_ROLES,
+	CHANGE_SUCURSAL_ROLES,
 	LISTABLE_USER_ROLES,
 	ROLE_LEVEL,
 	RESUMEN_ADMIN_ROLES,
@@ -35,6 +36,11 @@ export function canViewResumenAdmin(role: Role | null): boolean {
 /** true si el rol puede consultar el resumen de sus compras del día */
 export function canViewResumenCajero(role: Role | null): boolean {
 	return !!role && RESUMEN_CAJERO_ROLES.includes(role);
+}
+
+/** true si el rol puede cambiarse de sucursal por su cuenta */
+export function canChangeSucursal(role: Role | null): boolean {
+	return !!role && CHANGE_SUCURSAL_ROLES.includes(role);
 }
 
 /** Roles de usuarios del panel que el rol puede ver en Administradores */
