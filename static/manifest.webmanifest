@@ -8,7 +8,7 @@
 	"start_url": "/app",
 	"scope": "/",
 	"display": "standalone",
-	"background_color": "#011751",
+	"background_color": "#ffffff",
 	"theme_color": "#ffffff",
 	"categories": ["shopping", "lifestyle"],
 	"icons": [

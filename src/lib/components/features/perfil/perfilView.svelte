@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { PerfilSkeleton } from '#lib/components/skeletons/index.ts';
 	import { Button } from '#lib/components/ui/index.ts';
 	import { AlertTriangleIcon, RefreshIcon } from '#lib/icons/outline/index.ts';
 	import type { CurrentUser, User } from '#lib/interfaces/index.ts';
 	import { errorService, perfilService } from '#lib/services/index.ts';
-	import { authStore, currentRole } from '#lib/stores/index.ts';
+	import { authStore, currentRole, currentUserStore } from '#lib/stores/index.ts';
 	import { canChangeSucursal } from '#lib/utils/index.ts';
 	import PerfilDatosForm from './perfilDatosForm.svelte';
 	import PerfilPasswordForm from './perfilPasswordForm.svelte';
@@ -48,6 +48,19 @@
 		perfil = { ...perfil, user };
 		authStore.setUserData(user);
 	}
+
+	// Cambiar de sucursal (desde el modal de esta página o el del menú de usuario) actualiza la sesión:
+	// el perfil adopta su sucursal y negocio sin esperar a recargar
+	$effect(() => {
+		const session = $currentUserStore;
+		const current = untrack(() => perfil);
+		if (!session || !current || session.user.sucursal_id === current.user.sucursal_id) return;
+		perfil = {
+			user: { ...current.user, sucursal_id: session.user.sucursal_id },
+			negocio: session.negocio,
+			sucursal: session.sucursal
+		};
+	});
 
 	onMount(loadPerfil);
 </script>
