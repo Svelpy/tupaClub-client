@@ -19,15 +19,15 @@
 </script>
 
 <article
-	class="flex gap-3 rounded-xl border border-light-one_d bg-light-one p-4 dark:border-dark-one_d dark:bg-dark-one"
+	class="flex min-w-0 items-start gap-3 rounded-xl border border-light-one_d bg-light-one p-3 sm:p-4 dark:border-dark-one_d dark:bg-dark-one"
 >
-	<ClienteAvatar {cliente} size="lg" />
+	<ClienteAvatar {cliente} size="lg" class="shrink-0" />
 	<div class="min-w-0 flex-1">
-		<h3 class="truncate font-semibold text-light-two dark:text-dark-two">
+		<h3 class="font-semibold text-light-two dark:text-dark-two">
 			<button
 				type="button"
 				onclick={() => onView(cliente)}
-				class="max-w-full truncate text-left hover:underline focus-visible:underline focus-visible:outline-none"
+				class="block w-full text-left leading-snug break-words hover:underline focus-visible:underline focus-visible:outline-none"
 			>
 				{fullName}
 			</button>
@@ -35,13 +35,10 @@
 		<p class="truncate text-xs text-light-two_d dark:text-dark-four_d">CI {cliente.ci}</p>
 		<div class="mt-2 space-y-1 text-sm">
 			{#if cliente.telefono}
-				<a
-					href="tel:{cliente.telefono}"
-					class="flex items-center gap-1.5 font-medium text-light-three dark:text-dark-three"
-				>
+				<p class="flex items-center gap-1.5 font-medium text-light-three dark:text-dark-three">
 					<PhoneIcon class="size-4 shrink-0" />
-					{cliente.telefono}
-				</a>
+					<span class="truncate">{cliente.telefono}</span>
+				</p>
 			{/if}
 			{#if cliente.email}
 				<a
@@ -62,7 +59,7 @@
 			</span>
 		</div>
 	</div>
-	<div class="-mt-1.5 -mr-2 shrink-0 self-start">
+	<div class="-mt-1 -mr-1.5 shrink-0 self-start">
 		<ClienteActions {cliente} {onView} {onEdit} {onResetPassword} {onDelete} />
 	</div>
 </article>

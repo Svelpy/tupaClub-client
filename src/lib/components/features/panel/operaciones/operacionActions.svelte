@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { DropdownMenu } from '#lib/components/ui/index.ts';
-	import { DotsVerticalIcon, FilterIcon, UserIcon } from '#lib/icons/outline/index.ts';
+	import { DotsVerticalIcon, FilterIcon, TrashIcon, UserIcon } from '#lib/icons/outline/index.ts';
 	import type { DropdownOption, OperacionListItem } from '#lib/interfaces/index.ts';
 
 	/** Solo se muestran las opciones cuyo handler se pasa (p. ej. no se ofrece un filtro ya aplicado) */
@@ -8,9 +8,11 @@
 		item: OperacionListItem;
 		onFilterReceptor?: (item: OperacionListItem) => void;
 		onFilterEmisor?: (item: OperacionListItem) => void;
+		/** Solo OWNER y ADMIN; no se ofrece en operaciones ya anuladas */
+		onAnular?: (item: OperacionListItem) => void;
 	}
 
-	let { item, onFilterReceptor, onFilterEmisor }: Props = $props();
+	let { item, onFilterReceptor, onFilterEmisor, onAnular }: Props = $props();
 
 	let isOpen = $state(false);
 	let trigger = $state<HTMLButtonElement>();
@@ -28,7 +30,14 @@
 				label: `Ver registradas por ${item.emisor.nombre}`,
 				icon: FilterIcon,
 				action: () => onFilterEmisor(item)
-			}
+			},
+			onAnular &&
+				!item.operacion.anulada_at && {
+					id: 'anular',
+					label: 'Anular operación',
+					icon: TrashIcon,
+					action: () => onAnular(item)
+				}
 		].filter((option) => !!option)
 	);
 </script>

@@ -37,16 +37,7 @@
 		</div>
 	</TableCell>
 	<TableCell class="px-4 py-3 text-sm">
-		{#if cliente.telefono}
-			<a
-				href="tel:{cliente.telefono}"
-				class="block truncate text-light-two hover:underline dark:text-dark-two"
-			>
-				{cliente.telefono}
-			</a>
-		{:else}
-			<p class="text-light-two dark:text-dark-two">{formatValue(cliente.telefono)}</p>
-		{/if}
+		<p class="truncate text-light-two dark:text-dark-two">{formatValue(cliente.telefono)}</p>
 		{#if cliente.email}
 			<a
 				href="mailto:{cliente.email}"

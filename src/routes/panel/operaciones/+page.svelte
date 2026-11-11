@@ -4,6 +4,7 @@
 	import { MainLayout } from '#lib/components/layout/index.ts';
 	import { Button, PageHeader } from '#lib/components/ui/index.ts';
 	import {
+		OperacionAnularModal,
 		OperacionFilters,
 		OperacionList
 	} from '#lib/components/features/panel/operaciones/index.ts';
@@ -14,14 +15,17 @@
 		Administrador,
 		Cliente,
 		NegocioListItem,
+		Operacion,
 		OperacionListItem
 	} from '#lib/interfaces/index.ts';
 	import { errorService, negocioService, operacionService } from '#lib/services/index.ts';
 	import { currentRole } from '#lib/stores/index.ts';
-	import { can, fetchAllPages } from '#lib/utils/index.ts';
+	import { can, canAnularOperacion, fetchAllPages } from '#lib/utils/index.ts';
 
 	// Registrar una compra crea una operación
 	const canCreate = $derived(can($currentRole, Module.OPERACION, Action.CREATE));
+	// Anular revierte los puntos de la compra: solo OWNER y ADMIN
+	const canAnular = $derived(canAnularOperacion($currentRole));
 
 	let operaciones = $state<OperacionListItem[]>([]);
 	let currentPage = $state<number>(PAGINATION.DEFAULT_PAGE);
@@ -34,6 +38,8 @@
 	let emisor = $state<Administrador | null>(null);
 	let isLoading = $state(false);
 	let loadError = $state('');
+	// Operación que se está anulando; null = modal cerrado
+	let anulandoItem = $state<OperacionListItem | null>(null);
 
 	// Opciones del filtro de sucursal: el listado de negocios trae sus sucursales
 	let negocios = $state<NegocioListItem[]>([]);
@@ -102,6 +108,15 @@
 		loadOperaciones(PAGINATION.DEFAULT_PAGE);
 	}
 
+	// Tras anular se actualiza la operación en la lista, sin volver a pedirla
+	function handleAnulada(updated: Operacion) {
+		operaciones = operaciones.map((item) =>
+			item.operacion.id === updated.id
+				? { ...item, operacion: { ...item.operacion, ...updated } }
+				: item
+		);
+	}
+
 	onMount(() => {
 		loadOperaciones(PAGINATION.DEFAULT_PAGE);
 		loadOptions();
@@ -146,5 +161,12 @@
 		onRetry={() => loadOperaciones(currentPage)}
 		onFilterReceptor={receptor ? undefined : (item) => applyFilters({ receptor: item.receptor })}
 		onFilterEmisor={emisor ? undefined : (item) => applyFilters({ emisor: item.emisor })}
+		onAnular={canAnular ? (item) => (anulandoItem = item) : undefined}
+	/>
+
+	<OperacionAnularModal
+		item={anulandoItem}
+		onClose={() => (anulandoItem = null)}
+		onAnulada={handleAnulada}
 	/>
 </MainLayout>

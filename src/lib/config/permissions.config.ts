@@ -86,7 +86,13 @@ export const RESUMEN_CAJERO_ROLES: readonly Role[] = [Role.CAJERO];
  */
 export const CHANGE_SUCURSAL_ROLES: readonly Role[] = [Role.ADMIN, Role.CAJERO];
 
-type ModulePermissions =Partial<Record<Module, readonly Action[]>>;
+/**
+ * Roles que pueden anular una operación y revertir sus puntos (`POST /operaciones/{id}/cancel`).
+ * No depende del módulo OPERACION: SUPERADMIN también tiene UPDATE ahí y no puede anular.
+ */
+export const ANULAR_OPERACION_ROLES: readonly Role[] = [Role.OWNER, Role.ADMIN];
+
+type ModulePermissions = Partial<Record<Module, readonly Action[]>>;
 
 const ALL_ACTIONS: readonly Action[] = [Action.CREATE, Action.READ, Action.UPDATE, Action.DELETE];
 const SOLO_LECTURA: readonly Action[] = [Action.READ];

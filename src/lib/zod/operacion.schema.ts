@@ -40,3 +40,20 @@ export const createCompraSchema = (montoMinimo: number) =>
 	});
 
 export type CreateCompraInput = z.input<ReturnType<typeof createCompraSchema>>;
+
+export const OPERACION_MOTIVO_MIN = 5;
+export const OPERACION_MOTIVO_MAX = 255;
+
+/** Motivo de la anulación: queda registrado en la operación */
+export const anularOperacionSchema = z.object({
+	motivo: z
+		.string()
+		.trim()
+		.nonempty({ message: 'Escribe el motivo de la anulación' })
+		.min(OPERACION_MOTIVO_MIN, {
+			message: `Describe el motivo con al menos ${OPERACION_MOTIVO_MIN} caracteres.`
+		})
+		.max(OPERACION_MOTIVO_MAX, {
+			message: `El motivo no puede exceder los ${OPERACION_MOTIVO_MAX} caracteres.`
+		})
+});

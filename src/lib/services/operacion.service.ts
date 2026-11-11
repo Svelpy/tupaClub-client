@@ -1,6 +1,8 @@
 import { apiFidelityTupa } from '#lib/config/index.ts';
 import type {
+	AnularOperacionRequest,
 	CreateOperacionRequest,
+	Operacion,
 	OperacionDetail,
 	OperacionListParams,
 	OperacionListResponse
@@ -28,6 +30,13 @@ class OperacionService {
 	/** Registra la compra y acumula los puntos según la configuración activa */
 	async create(data: CreateOperacionRequest): Promise<OperacionDetail> {
 		return apiFidelityTupa.post<OperacionDetail>('/operaciones/', data, { requireAuth: true });
+	}
+
+	/** Anula la compra y le quita al cliente los puntos que sumó. Solo OWNER y ADMIN */
+	async anular(id: string, data: AnularOperacionRequest): Promise<Operacion> {
+		return apiFidelityTupa.post<Operacion>(`/operaciones/${encodeURIComponent(id)}/cancel`, data, {
+			requireAuth: true
+		});
 	}
 }
 

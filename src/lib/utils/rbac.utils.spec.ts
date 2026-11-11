@@ -5,6 +5,7 @@ import { filterNavigation } from './navigation';
 import {
 	can,
 	canAccessRoute,
+	canAnularOperacion,
 	canChangeSucursal,
 	canManageUserRole,
 	canViewResumenAdmin,
@@ -299,5 +300,16 @@ describe('canChangeSucursal', () => {
 			expect(canChangeSucursal(role)).toBe(false);
 		}
 		expect(canChangeSucursal(null)).toBe(false);
+	});
+});
+
+describe('canAnularOperacion', () => {
+	it('solo OWNER y ADMIN pueden anular operaciones', () => {
+		expect(canAnularOperacion(Role.OWNER)).toBe(true);
+		expect(canAnularOperacion(Role.ADMIN)).toBe(true);
+		for (const role of [Role.SUPERADMIN, Role.CAJERO, Role.SOCIO, Role.CLIENTE]) {
+			expect(canAnularOperacion(role)).toBe(false);
+		}
+		expect(canAnularOperacion(null)).toBe(false);
 	});
 });

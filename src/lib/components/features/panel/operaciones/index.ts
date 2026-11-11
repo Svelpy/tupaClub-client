@@ -1,4 +1,5 @@
 export { default as OperacionActions } from './operacionActions.svelte';
+export { default as OperacionAnularModal } from './operacionAnularModal.svelte';
 export { default as OperacionCard } from './operacionCard.svelte';
 export { default as OperacionFilters } from './operacionFilters.svelte';
 export { default as OperacionList } from './operacionList.svelte';

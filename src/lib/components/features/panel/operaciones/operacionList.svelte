@@ -23,6 +23,8 @@
 		/** Acciones opcionales: las que no se pasan no se muestran (p. ej. un filtro ya aplicado) */
 		onFilterReceptor?: (item: OperacionListItem) => void;
 		onFilterEmisor?: (item: OperacionListItem) => void;
+		/** Solo OWNER y ADMIN; no se ofrece en operaciones ya anuladas */
+		onAnular?: (item: OperacionListItem) => void;
 	}
 
 	let {
@@ -38,7 +40,8 @@
 		onPerPageChange,
 		onRetry,
 		onFilterReceptor,
-		onFilterEmisor
+		onFilterEmisor,
+		onAnular
 	}: Props = $props();
 
 	function handlePerPageChange(event: Event & { currentTarget: HTMLSelectElement }) {
@@ -102,13 +105,13 @@
 			<!-- Móvil y tablet pequeña: tarjetas -->
 			<div class="grid gap-3 p-3 sm:grid-cols-2 md:hidden">
 				{#each operaciones as item (item.operacion.id)}
-					<OperacionCard {item} {onFilterReceptor} {onFilterEmisor} />
+					<OperacionCard {item} {onFilterReceptor} {onFilterEmisor} {onAnular} />
 				{/each}
 			</div>
 
 			<!-- Tablet y escritorio: tabla -->
 			<div class="hidden md:block">
-				<OperacionTable {operaciones} {onFilterReceptor} {onFilterEmisor} />
+				<OperacionTable {operaciones} {onFilterReceptor} {onFilterEmisor} {onAnular} />
 			</div>
 		</div>
 		<div

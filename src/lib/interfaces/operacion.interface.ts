@@ -19,6 +19,16 @@ export interface Operacion {
 	total_puntos: number;
 	created_at: string;
 	updated_at: string | null;
+	/** Fecha de anulación; null o ausente = operación vigente */
+	anulada_at?: string | null;
+	/** Usuario del panel que la anuló */
+	anulada_por?: string | null;
+	motivo_anulacion?: string | null;
+}
+
+/** Body de `POST /operaciones/{id}/cancel`: anula la compra y revierte sus puntos */
+export interface AnularOperacionRequest {
+	motivo: string;
 }
 
 /** Item del listado: la operación junto a quién la registró, el cliente y la sucursal */

@@ -7,12 +7,14 @@
 		operaciones: OperacionListItem[];
 		onFilterReceptor?: (item: OperacionListItem) => void;
 		onFilterEmisor?: (item: OperacionListItem) => void;
+		/** Solo OWNER y ADMIN; no se ofrece en operaciones ya anuladas */
+		onAnular?: (item: OperacionListItem) => void;
 	}
 
-	let { operaciones, onFilterReceptor, onFilterEmisor }: Props = $props();
+	let { operaciones, onFilterReceptor, onFilterEmisor, onAnular }: Props = $props();
 
 	// Sin ninguna acción disponible no se muestra la columna
-	const hasActions = $derived(!!onFilterReceptor || !!onFilterEmisor);
+	const hasActions = $derived(!!onFilterReceptor || !!onFilterEmisor || !!onAnular);
 
 	const headClass = 'h-11 text-xs tracking-wide text-light-two_d uppercase dark:text-dark-two_d';
 </script>
@@ -35,7 +37,7 @@
 		</TableHeader>
 		<TableBody>
 			{#each operaciones as item (item.operacion.id)}
-				<OperacionRow {item} {onFilterReceptor} {onFilterEmisor} />
+				<OperacionRow {item} {onFilterReceptor} {onFilterEmisor} {onAnular} />
 			{/each}
 		</TableBody>
 	</Table>

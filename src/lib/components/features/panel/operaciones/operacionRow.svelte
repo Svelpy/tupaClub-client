@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { ClienteAvatar } from '#lib/components/features/panel/clientes/index.ts';
-	import { TableCell, TableRow } from '#lib/components/ui/index.ts';
+	import { Badge, TableCell, TableRow } from '#lib/components/ui/index.ts';
 	import type { OperacionListItem } from '#lib/interfaces/index.ts';
 	import {
 		formatCurrency,
@@ -16,12 +16,15 @@
 		item: OperacionListItem;
 		onFilterReceptor?: (item: OperacionListItem) => void;
 		onFilterEmisor?: (item: OperacionListItem) => void;
+		/** Solo OWNER y ADMIN; no se ofrece en operaciones ya anuladas */
+		onAnular?: (item: OperacionListItem) => void;
 	}
 
-	let { item, onFilterReceptor, onFilterEmisor }: Props = $props();
+	let { item, onFilterReceptor, onFilterEmisor, onAnular }: Props = $props();
 
 	// Sin ninguna acción disponible no se muestra la celda
-	const hasActions = $derived(!!onFilterReceptor || !!onFilterEmisor);
+	const hasActions = $derived(!!onFilterReceptor || !!onFilterEmisor || !!onAnular);
+	const isAnulada = $derived(!!item.operacion.anulada_at);
 </script>
 
 <TableRow
@@ -32,9 +35,16 @@
 			<!-- Se muestran las iniciales del cliente, no su foto -->
 			<ClienteAvatar cliente={{ ...item.receptor, avatar_url: null }} />
 			<div class="min-w-0">
-				<p class="truncate font-medium text-light-two dark:text-dark-two">
-					{formatFullName(item.receptor)}
-				</p>
+				<div class="flex min-w-0 items-center gap-2">
+					<p class="truncate font-medium text-light-two dark:text-dark-two">
+						{formatFullName(item.receptor)}
+					</p>
+					{#if isAnulada}
+						<Badge variant="error" size="sm" title={item.operacion.motivo_anulacion ?? undefined}
+							>Anulada</Badge
+						>
+					{/if}
+				</div>
 				<p class="truncate text-xs text-light-two_d dark:text-dark-two_d">
 					{formatValue(item.operacion.referencia)}
 				</p>
@@ -42,7 +52,14 @@
 		</div>
 	</TableCell>
 	<TableCell class="px-4 py-3 text-right whitespace-nowrap">
-		<p class="font-semibold text-light-three tabular-nums dark:text-dark-three">
+		<p
+			class={[
+				'font-semibold tabular-nums',
+				isAnulada
+					? 'text-light-two_d line-through dark:text-dark-two_d'
+					: 'text-light-three dark:text-dark-three'
+			]}
+		>
 			+{formatNumber(item.operacion.total_puntos)} pts
 		</p>
 		<p class="text-xs text-light-two_d tabular-nums dark:text-dark-two_d">
@@ -65,7 +82,7 @@
 	</TableCell>
 	{#if hasActions}
 		<TableCell class="px-2 py-3 text-right">
-			<OperacionActions {item} {onFilterReceptor} {onFilterEmisor} />
+			<OperacionActions {item} {onFilterReceptor} {onFilterEmisor} {onAnular} />
 		</TableCell>
 	{/if}
 </TableRow>
